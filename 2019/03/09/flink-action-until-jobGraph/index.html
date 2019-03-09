@@ -5,15 +5,23 @@
   
 
   
-  <title>徐涛的个人主页</title>
+  <title>Flink生成JobGraph的过程 | 徐涛的个人主页</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="徐涛的个人主页">
-<meta property="og:url" content="http://yoursite.com/index.html">
+  <meta name="description" content="Flink源码阅读笔记WordCount程序总览12345678910111213val env = StreamExecutionEnvironment.getExecutionEnvironmentval text = env.addSource(new RandomLocalJsonSourceFunction(1,1000))val words = text.flatMap &amp;#123;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flink生成JobGraph的过程">
+<meta property="og:url" content="http://yoursite.com/2019/03/09/flink-action-until-jobGraph/index.html">
 <meta property="og:site_name" content="徐涛的个人主页">
+<meta property="og:description" content="Flink源码阅读笔记WordCount程序总览12345678910111213val env = StreamExecutionEnvironment.getExecutionEnvironmentval text = env.addSource(new RandomLocalJsonSourceFunction(1,1000))val words = text.flatMap &amp;#123;">
 <meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/2019/03/09/flink-action-until-jobGraph/15519530262226.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/03/09/flink-action-until-jobGraph/15465706985211.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/03/09/flink-action-until-jobGraph/15510811705376.jpg">
+<meta property="og:updated_time" content="2019-03-09T15:13:41.004Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="徐涛的个人主页">
+<meta name="twitter:title" content="Flink生成JobGraph的过程">
+<meta name="twitter:description" content="Flink源码阅读笔记WordCount程序总览12345678910111213val env = StreamExecutionEnvironment.getExecutionEnvironmentval text = env.addSource(new RandomLocalJsonSourceFunction(1,1000))val words = text.flatMap &amp;#123;">
+<meta name="twitter:image" content="http://yoursite.com/2019/03/09/flink-action-until-jobGraph/15519530262226.jpg">
   
     <link rel="alternate" href="/atom.xml" title="徐涛的个人主页" type="application/atom+xml">
   
@@ -60,9 +68,7 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-    <article id="post-flink-action-until-jobGraph" class="article article-type-post" itemscope="" itemprop="blogPost">
+        <section id="main"><article id="post-flink-action-until-jobGraph" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/03/09/flink-action-until-jobGraph/" class="article-date">
   <time datetime="2019-03-09T14:55:28.000Z" itemprop="datePublished">2019-03-09</time>
@@ -75,8 +81,8 @@
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/03/09/flink-action-until-jobGraph/">Flink生成JobGraph的过程</a>
+    <h1 class="article-title" itemprop="name">
+      Flink生成JobGraph的过程
     </h1>
   
 
@@ -416,85 +422,19 @@ if (currentNodeId.equals(startNodeId)) {
     </footer>
   </div>
   
-</article>
-
-
+    
+<nav id="article-nav">
   
-    <article id="post-flink-component-relation" class="article article-type-post" itemscope="" itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/02/17/flink-component-relation/" class="article-date">
-  <time datetime="2019-02-17T00:26:03.000Z" itemprop="datePublished">2019-02-17</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/17/flink-component-relation/">Flink模块间依赖关系</a>
-    </h1>
+    <a href="/2019/02/17/flink-component-relation/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Flink模块间依赖关系</div>
+    </a>
   
+</nav>
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="flink_component_relation.png" alt=""></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/02/17/flink-component-relation/" data-id="cjt1m6c270002ltxrozqrus7w" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
   
 </article>
-
-
-  
-    <article id="post-flink-component-communication" class="article article-type-post" itemscope="" itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/02/16/flink-component-communication/" class="article-date">
-  <time datetime="2019-02-16T09:12:58.000Z" itemprop="datePublished">2019-02-16</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/16/flink-component-communication/">Flink模块间通信图</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="Flink_Communication.png" alt=""></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/02/16/flink-component-communication/" data-id="cjt1m6c240001ltxrwerm4gte" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-
 
 </section>
         
