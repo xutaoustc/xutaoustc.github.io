@@ -79,21 +79,23 @@
 
 
 
-<meta name="description" content="Flink源码阅读笔记WordCount程序总览12345678910111213val env = StreamExecutionEnvironment.getExecutionEnvironmentval text = env.addSource(new RandomLocalJsonSourceFunction(1,1000))val words = text.flatMap &amp;#123;">
+<meta name="description" content="Flink源码阅读笔记–DAG篇WordCount程序总览12345678910111213val env = StreamExecutionEnvironment.getExecutionEnvironmentval text = env.addSource(new RandomLocalJsonSourceFunction(1,1000))val words = text.flatMap &amp;#">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Flink生成JobGraph的过程">
+<meta property="og:title" content="Flink源码阅读笔记--DAG篇">
 <meta property="og:url" content="http://yoursite.com/2019/03/09/flink-action-until-jobGraph/index.html">
 <meta property="og:site_name" content="徐涛的个人主页">
-<meta property="og:description" content="Flink源码阅读笔记WordCount程序总览12345678910111213val env = StreamExecutionEnvironment.getExecutionEnvironmentval text = env.addSource(new RandomLocalJsonSourceFunction(1,1000))val words = text.flatMap &amp;#123;">
+<meta property="og:description" content="Flink源码阅读笔记–DAG篇WordCount程序总览12345678910111213val env = StreamExecutionEnvironment.getExecutionEnvironmentval text = env.addSource(new RandomLocalJsonSourceFunction(1,1000))val words = text.flatMap &amp;#">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://yoursite.com/2019/03/09/flink-action-until-jobGraph/15519530262226.jpg">
-<meta property="og:image" content="http://yoursite.com/2019/03/09/flink-action-until-jobGraph/15465706985211.jpg">
-<meta property="og:image" content="http://yoursite.com/2019/03/09/flink-action-until-jobGraph/15510811705376.jpg">
-<meta property="og:updated_time" content="2019-03-09T15:13:41.004Z">
+<meta property="og:image" content="http://yoursite.com/2019/03/09/flink-action-until-jobGraph/media/15465045794719/15519530262226.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/03/09/flink-action-until-jobGraph/media/15465045794719/15465706985211.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/03/09/flink-action-until-jobGraph/media/15465045794719/15466760243164.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/03/09/flink-action-until-jobGraph/media/15465045794719/15468309151085.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/03/09/flink-action-until-jobGraph/media/15465045794719/15510811705376.jpg">
+<meta property="og:updated_time" content="2019-07-10T21:46:30.162Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Flink生成JobGraph的过程">
-<meta name="twitter:description" content="Flink源码阅读笔记WordCount程序总览12345678910111213val env = StreamExecutionEnvironment.getExecutionEnvironmentval text = env.addSource(new RandomLocalJsonSourceFunction(1,1000))val words = text.flatMap &amp;#123;">
-<meta name="twitter:image" content="http://yoursite.com/2019/03/09/flink-action-until-jobGraph/15519530262226.jpg">
+<meta name="twitter:title" content="Flink源码阅读笔记--DAG篇">
+<meta name="twitter:description" content="Flink源码阅读笔记–DAG篇WordCount程序总览12345678910111213val env = StreamExecutionEnvironment.getExecutionEnvironmentval text = env.addSource(new RandomLocalJsonSourceFunction(1,1000))val words = text.flatMap &amp;#">
+<meta name="twitter:image" content="http://yoursite.com/2019/03/09/flink-action-until-jobGraph/media/15465045794719/15519530262226.jpg">
 
 
 
@@ -129,7 +131,7 @@
 
 
 
-  <title>Flink生成JobGraph的过程 | 徐涛的个人主页</title>
+  <title>Flink源码阅读笔记--DAG篇 | 徐涛的个人主页</title>
   
 
 
@@ -253,7 +255,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Flink生成JobGraph的过程</h1>
+          <h1 class="post-title" itemprop="name headline">Flink源码阅读笔记--DAG篇</h1>
         
 
         <div class="post-meta">
@@ -303,7 +305,7 @@
       
 
       
-        <h1 id="Flink源码阅读笔记"><a href="#Flink源码阅读笔记" class="headerlink" title="Flink源码阅读笔记"></a>Flink源码阅读笔记</h1><h2 id="WordCount程序总览"><a href="#WordCount程序总览" class="headerlink" title="WordCount程序总览"></a>WordCount程序总览</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">val env = StreamExecutionEnvironment.getExecutionEnvironment</span><br><span class="line"></span><br><span class="line">val text = env.addSource(new RandomLocalJsonSourceFunction(1,1000))</span><br><span class="line"></span><br><span class="line">val words = text.flatMap &#123; _.toLowerCase.split(&quot;\\W+&quot;) filter &#123; _.nonEmpty &#125; &#125;</span><br><span class="line">val counts = words</span><br><span class="line">  .map &#123; (_, 1) &#125;</span><br><span class="line">  .keyBy(0)</span><br><span class="line">  .sum(1)</span><br><span class="line"></span><br><span class="line">counts.print()</span><br><span class="line"></span><br><span class="line">env.execute(&quot;Window Stream WordCount&quot;)</span><br></pre></td></tr></table></figure>
+        <h1 id="Flink源码阅读笔记–DAG篇"><a href="#Flink源码阅读笔记–DAG篇" class="headerlink" title="Flink源码阅读笔记–DAG篇"></a>Flink源码阅读笔记–DAG篇</h1><h2 id="WordCount程序总览"><a href="#WordCount程序总览" class="headerlink" title="WordCount程序总览"></a>WordCount程序总览</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">val env = StreamExecutionEnvironment.getExecutionEnvironment</span><br><span class="line"></span><br><span class="line">val text = env.addSource(new RandomLocalJsonSourceFunction(1,1000))</span><br><span class="line"></span><br><span class="line">val words = text.flatMap &#123; _.toLowerCase.split(&quot;\\W+&quot;) filter &#123; _.nonEmpty &#125; &#125;</span><br><span class="line">val counts = words</span><br><span class="line">  .map &#123; (_, 1) &#125;</span><br><span class="line">  .keyBy(0)</span><br><span class="line">  .sum(1)</span><br><span class="line"></span><br><span class="line">counts.print()</span><br><span class="line"></span><br><span class="line">env.execute(&quot;Window Stream WordCount&quot;)</span><br></pre></td></tr></table></figure>
 <p>可以看到一个WordCount程序大概分为5个部分</p>
 <ol>
 <li>构建ExecutionEnvironment</li>
@@ -313,38 +315,91 @@
 <li>ExecutionEnvironment.execute方法</li>
 </ol>
 <h2 id="构建ExecutionEnvironment"><a href="#构建ExecutionEnvironment" class="headerlink" title="构建ExecutionEnvironment"></a>构建ExecutionEnvironment</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">def getExecutionEnvironment: StreamExecutionEnvironment = &#123;</span><br><span class="line">  new StreamExecutionEnvironment(JavaEnv.getExecutionEnvironment)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>org.apache.flink.streaming.api.scala.StreamExecutionEnvironment和<strong>org.apache.flink.streaming.api.environment.StreamExecutionEnvironment</strong>需要区分对待。前者是对后者的封装，后者是核心类。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public static StreamExecutionEnvironment getExecutionEnvironment() &#123;</span><br><span class="line">	if (contextEnvironmentFactory != null) &#123;</span><br><span class="line">		return contextEnvironmentFactory.createExecutionEnvironment();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	// because the streaming project depends on &quot;flink-clients&quot; (and not the other way around)</span><br><span class="line">	// we currently need to intercept the data set environment and create a dependent stream env.</span><br><span class="line">	// this should be fixed once we rework the project dependencies</span><br><span class="line"></span><br><span class="line">	ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">	if (env instanceof ContextEnvironment) &#123;</span><br><span class="line">		return new StreamContextEnvironment((ContextEnvironment) env);</span><br><span class="line">	&#125; else if (env instanceof OptimizerPlanEnvironment || env instanceof PreviewPlanEnvironment) &#123;</span><br><span class="line">		return new StreamPlanEnvironment(env);</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		return createLocalEnvironment();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>核心类StreamExecutionEnvironment.getExecutionEnvironment这个方法非常重要。核心类StreamExecutionEnvironment是抽象类，方法返回StreamExecutionEnvironment的具体子类。<br>在这个方法里实际做了两件事情：</p>
+<p>核心是StreamExecutionEnvironment.getExecutionEnvironment<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public static StreamExecutionEnvironment getExecutionEnvironment() &#123;</span><br><span class="line">	if (contextEnvironmentFactory != null) &#123;</span><br><span class="line">		return contextEnvironmentFactory.createExecutionEnvironment();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	// because the streaming project depends on &quot;flink-clients&quot; (and not the other way around)</span><br><span class="line">	// we currently need to intercept the data set environment and create a dependent stream env.</span><br><span class="line">	// this should be fixed once we rework the project dependencies</span><br><span class="line"></span><br><span class="line">	ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();</span><br><span class="line">	if (env instanceof ContextEnvironment) &#123;</span><br><span class="line">		return new StreamContextEnvironment((ContextEnvironment) env);</span><br><span class="line">	&#125; else if (env instanceof OptimizerPlanEnvironment || env instanceof PreviewPlanEnvironment) &#123;</span><br><span class="line">		return new StreamPlanEnvironment(env);</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		return createLocalEnvironment();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>createLocalEnvironment返回LocalStreamEnvironment。所有的都用默认，只是给ExecutionConfig设置了并行度</p>
+<table>
+<thead>
+<tr>
+<th>类</th>
+<th>属性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LocalStreamEnvironment</td>
+<td>Configuration</td>
+</tr>
+<tr>
+<td>StreamExecutionEnvironment</td>
+<td>ExecutionConfig</td>
+</tr>
+<tr>
+<td>StreamExecutionEnvironment</td>
+<td>CheckpointConfig</td>
+</tr>
+<tr>
+<td>StreamExecutionEnvironment</td>
+<td>transformations</td>
+</tr>
+<tr>
+<td>StreamExecutionEnvironment</td>
+<td>bufferTimeout</td>
+</tr>
+</tbody>
+</table>
+<p>TIPS:ExecutionConfig的parallelism会带到Transformation里面作为默认并行度。</p>
+<h2 id="添加Source"><a href="#添加Source" class="headerlink" title="添加Source"></a>添加Source</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">public &lt;OUT&gt; DataStreamSource&lt;OUT&gt; addSource(SourceFunction&lt;OUT&gt; function, String sourceName, TypeInformation&lt;OUT&gt; typeInfo) &#123;</span><br><span class="line"></span><br><span class="line">if (typeInfo == null) &#123;</span><br><span class="line">	if (function instanceof ResultTypeQueryable) &#123;</span><br><span class="line">		typeInfo = ((ResultTypeQueryable&lt;OUT&gt;) function).getProducedType();</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		try &#123;</span><br><span class="line">			typeInfo = TypeExtractor.createTypeInfo(</span><br><span class="line">					SourceFunction.class,</span><br><span class="line">					function.getClass(), 0, null, null);</span><br><span class="line">		&#125; catch (final InvalidTypesException e) &#123;</span><br><span class="line">			typeInfo = (TypeInformation&lt;OUT&gt;) new MissingTypeInfo(sourceName, e);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">boolean isParallel = function instanceof ParallelSourceFunction;</span><br><span class="line"></span><br><span class="line">clean(function);</span><br><span class="line">StreamSource&lt;OUT, ?&gt; sourceOperator;</span><br><span class="line">if (function instanceof StoppableFunction) &#123;</span><br><span class="line">	sourceOperator = new StoppableStreamSource&lt;&gt;(cast2StoppableSourceFunction(function));</span><br><span class="line">&#125; else &#123;</span><br><span class="line">	sourceOperator = new StreamSource&lt;&gt;(function);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">return new DataStreamSource&lt;&gt;(this, typeInfo, sourceOperator, isParallel, sourceName);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>具体：在其中先用StreamSource封装了function，然后用SourceTransformation封装了StreamSource，最后用DataStreamSource封装了SourceTransformation。</p>
+<p>结果：StreamExecutionEnvironment.addSource最终返回一个DataStreamSource，这个是一个继承于DataStream的类。</p>
+<p>DataStream -&gt; Transformation -&gt; Operator -&gt; Function</p>
+<h2 id="flatMap算子"><a href="#flatMap算子" class="headerlink" title="flatMap算子"></a>flatMap算子</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">def flatMap[R: TypeInformation](fun: T =&gt; TraversableOnce[R]): DataStream[R] = &#123;</span><br><span class="line">  if (fun == null) &#123;</span><br><span class="line">    throw new NullPointerException(&quot;FlatMap function must not be null.&quot;)</span><br><span class="line">  &#125;</span><br><span class="line">  val cleanFun = clean(fun)</span><br><span class="line">  val flatMapper = new FlatMapFunction[T, R] &#123;</span><br><span class="line">    def flatMap(in: T, out: Collector[R]) &#123; cleanFun(in) foreach out.collect &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  flatMap(flatMapper)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public &lt;R&gt; SingleOutputStreamOperator&lt;R&gt; flatMap(FlatMapFunction&lt;T, R&gt; flatMapper) &#123;</span><br><span class="line"></span><br><span class="line">TypeInformation&lt;R&gt; outType = TypeExtractor.getFlatMapReturnTypes(clean(flatMapper),</span><br><span class="line">		getType(), Utils.getCallLocationName(), true);</span><br><span class="line"></span><br><span class="line">return transform(&quot;Flat Map&quot;, outType, new StreamFlatMap&lt;&gt;(clean(flatMapper)));</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>具体：</p>
 <ol>
-<li>org.apache.flink.api.java.ExecutionEnvironment.getExecutionEnvironment返回org.apache.flink.api.java.LocalEnvironment。</li>
-<li>然后调用createLocalEnvironment返回<strong>org.apache.flink.streaming.api.environment.LocalStreamEnvironment</strong>。<br>本地执行时，会将Runtime.getRuntime().availableProcessors()里面的值带到ExecutionConfig的parallelism属性里面。ExecutionConfig的parallelism会带到Transformation里面作为默认并行度</li>
+<li>先用FlatMapFunction封装自定义函数，然后调用DataStream.flatMap(FlatMapFunction)。</li>
+<li>用StreamFlatMap封装FlatMapFunction；调用DataStream.transform(transformation的名字、输出类型、Operator)。</li>
+<li>调用DataStream.transform</li>
 </ol>
-<h2 id="添加Source"><a href="#添加Source" class="headerlink" title="添加Source"></a>添加Source</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">  def addSource[T: TypeInformation](function: SourceFunction[T]): DataStream[T] = &#123;</span><br><span class="line">    require(function != null, &quot;Function must not be null.&quot;)</span><br><span class="line">    </span><br><span class="line">    val cleanFun = scalaClean(function)</span><br><span class="line">    val typeInfo = implicitly[TypeInformation[T]]</span><br><span class="line">    asScalaStream(javaEnv.addSource(cleanFun).returns(typeInfo))</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">public &lt;OUT&gt; DataStreamSource&lt;OUT&gt; addSource(SourceFunction&lt;OUT&gt; function, String sourceName, TypeInformation&lt;OUT&gt; typeInfo) &#123;</span><br><span class="line"></span><br><span class="line">		if (typeInfo == null) &#123;</span><br><span class="line">			if (function instanceof ResultTypeQueryable) &#123;</span><br><span class="line">				typeInfo = ((ResultTypeQueryable&lt;OUT&gt;) function).getProducedType();</span><br><span class="line">			&#125; else &#123;</span><br><span class="line">				try &#123;</span><br><span class="line">					typeInfo = TypeExtractor.createTypeInfo(</span><br><span class="line">							SourceFunction.class,</span><br><span class="line">							function.getClass(), 0, null, null);</span><br><span class="line">				&#125; catch (final InvalidTypesException e) &#123;</span><br><span class="line">					typeInfo = (TypeInformation&lt;OUT&gt;) new MissingTypeInfo(sourceName, e);</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		boolean isParallel = function instanceof ParallelSourceFunction;</span><br><span class="line"></span><br><span class="line">		clean(function);</span><br><span class="line">		StreamSource&lt;OUT, ?&gt; sourceOperator;</span><br><span class="line">		if (function instanceof StoppableFunction) &#123;</span><br><span class="line">			sourceOperator = new StoppableStreamSource&lt;&gt;(cast2StoppableSourceFunction(function));</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			sourceOperator = new StreamSource&lt;&gt;(function);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		return new DataStreamSource&lt;&gt;(this, typeInfo, sourceOperator, isParallel, sourceName);</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
-<p>其中调用了LocalStreamEnvironment的addSource方法。返回一个DataStreamSource，这个是一个继承于DataStream的类。</p>
-<p>先用StreamSource封装了function,然后用SourceTransformation封装了StreamSource，DataStreamSource封装了SourceTransformation。</p>
-<h2 id="flatMap算子"><a href="#flatMap算子" class="headerlink" title="flatMap算子"></a>flatMap算子</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">def flatMap[R: TypeInformation](fun: T =&gt; TraversableOnce[R]): DataStream[R] = &#123;</span><br><span class="line">  if (fun == null) &#123;</span><br><span class="line">    throw new NullPointerException(&quot;FlatMap function must not be null.&quot;)</span><br><span class="line">  &#125;</span><br><span class="line">  val cleanFun = clean(fun)</span><br><span class="line">  val flatMapper = new FlatMapFunction[T, R] &#123;</span><br><span class="line">    def flatMap(in: T, out: Collector[R]) &#123; cleanFun(in) foreach out.collect &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  flatMap(flatMapper)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在其中先用FlatMapFunction封装了自定义的函数（Function是最下面一级），然后调用了DataStream的flatMap重载<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public &lt;R&gt; SingleOutputStreamOperator&lt;R&gt; flatMap(FlatMapFunction&lt;T, R&gt; flatMapper) &#123;</span><br><span class="line"></span><br><span class="line">	TypeInformation&lt;R&gt; outType = TypeExtractor.getFlatMapReturnTypes(clean(flatMapper),</span><br><span class="line">			getType(), Utils.getCallLocationName(), true);</span><br><span class="line"></span><br><span class="line">	return transform(&quot;Flat Map&quot;, outType, new StreamFlatMap&lt;&gt;(clean(flatMapper)));</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>先用StreamFlatMap这个Operator封装了Function。然后在transform方法中，先用OneInputTransformation封装了StreamFlatMap，并设置input为之前的SourceTransformation。然后用SingleOutputStreamOperator封装了这个Transform</p>
-<h2 id="map算子"><a href="#map算子" class="headerlink" title="map算子"></a>map算子</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">def map[R: TypeInformation](fun: T =&gt; R): DataStream[R] = &#123;</span><br><span class="line">  if (fun == null) &#123;</span><br><span class="line">    throw new NullPointerException(&quot;Map function must not be null.&quot;)</span><br><span class="line">  &#125;</span><br><span class="line">  val cleanFun = clean(fun)</span><br><span class="line">  val mapper = new MapFunction[T, R] &#123;</span><br><span class="line">    def map(in: T): R = cleanFun(in)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  map(mapper)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>先用MapFunction封装了传入的function。然后调用了map的重载<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public &lt;R&gt; SingleOutputStreamOperator&lt;R&gt; map(MapFunction&lt;T, R&gt; mapper) &#123;</span><br><span class="line"></span><br><span class="line">	TypeInformation&lt;R&gt; outType = TypeExtractor.getMapReturnTypes(clean(mapper), getType(),</span><br><span class="line">			Utils.getCallLocationName(), true);</span><br><span class="line"></span><br><span class="line">	return transform(&quot;Map&quot;, outType, new StreamMap&lt;&gt;(clean(mapper)));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>先用StreamMap封装了Function。然后在transform方法中，先用OneInputTransformation封装了StreamFlatMap，并设置input为之前的SourceTransformation。然后用SingleOutputStreamOperator封装了这个Transform</p>
+<p>结果：最终返回一个SingleOutputStreamOperator，这个是一个继承于DataStream的类。</p>
+<p>TIPS: DataStream.transform做了：</p>
+<ol>
+<li>根据Operator生成OneInputTransformation</li>
+<li>返回SingleOutputStreamOperator</li>
+<li>把OneInputTransformation加入StreamExecutionEnvironment</li>
+</ol>
+<h2 id="map算子"><a href="#map算子" class="headerlink" title="map算子"></a>map算子</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">def map[R: TypeInformation](fun: T =&gt; R): DataStream[R] = &#123;</span><br><span class="line">  if (fun == null) &#123;</span><br><span class="line">    throw new NullPointerException(&quot;Map function must not be null.&quot;)</span><br><span class="line">  &#125;</span><br><span class="line">  val cleanFun = clean(fun)</span><br><span class="line">  val mapper = new MapFunction[T, R] &#123;</span><br><span class="line">    def map(in: T): R = cleanFun(in)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  map(mapper)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public &lt;R&gt; SingleOutputStreamOperator&lt;R&gt; map(MapFunction&lt;T, R&gt; mapper) &#123;</span><br><span class="line"></span><br><span class="line">TypeInformation&lt;R&gt; outType = TypeExtractor.getMapReturnTypes(clean(mapper), getType(),</span><br><span class="line">		Utils.getCallLocationName(), true);</span><br><span class="line"></span><br><span class="line">return transform(&quot;Map&quot;, outType, new StreamMap&lt;&gt;(clean(mapper)));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>过程：</p>
+<ol>
+<li>先用MapFunction封装自定义函数，然后调用DataStream.map(MapFunction）。</li>
+<li>用StreamMap封装MapFunction；调用DataStream.transform(transformation的名字、输出类型、Operator)。</li>
+<li>调用DataStream.transform</li>
+</ol>
+<p>结果：最终返回一个SingleOutputStreamOperator，这个是一个继承于DataStream的类。</p>
 <h2 id="keyBy算子"><a href="#keyBy算子" class="headerlink" title="keyBy算子"></a>keyBy算子</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public KeyedStream&lt;T, Tuple&gt; keyBy(int... fields) &#123;</span><br><span class="line">	if (getType() instanceof BasicArrayTypeInfo || getType() instanceof PrimitiveArrayTypeInfo) &#123;</span><br><span class="line">		return keyBy(KeySelectorUtil.getSelectorForArray(fields, getType()));</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		return keyBy(new Keys.ExpressionKeys&lt;&gt;(fields, getType()));</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>先创建Keys.ExpressionKeys封装了总的类型和key字段类型，然后调用keyBy的重载<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">private KeyedStream&lt;T, Tuple&gt; keyBy(Keys&lt;T&gt; keys) &#123;</span><br><span class="line">	return new KeyedStream&lt;&gt;(this, clean(KeySelectorUtil.getSelectorForKeys(keys,</span><br><span class="line">			getType(), getExecutionConfig())));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>在这个重载方法中，先调用KeySelectorUtil.getSelectorForKeys生成了ComparableKeySelector，然后调用KeyedStream构造函数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public KeyedStream(DataStream&lt;T&gt; dataStream, KeySelector&lt;T, KEY&gt; keySelector, TypeInformation&lt;KEY&gt; keyType) &#123;</span><br><span class="line">	this(</span><br><span class="line">		dataStream,</span><br><span class="line">		new PartitionTransformation&lt;&gt;(</span><br><span class="line">			dataStream.getTransformation(),</span><br><span class="line">			new KeyGroupStreamPartitioner&lt;&gt;(keySelector, StreamGraphGenerator.DEFAULT_LOWER_BOUND_MAX_PARALLELISM)),</span><br><span class="line">		keySelector,</span><br><span class="line">		keyType);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>生成KeyGroupStreamPartitioner(类似于Operator)封装了ComparableKeySelector，然后PartitionTransformation封装了KeyGroupStreamPartitioner，然后KeyedStream封装了PartitionTransformation。<br><img src="15519530262226.jpg" alt=""><br>KeyGroupStreamPartitioner的两个泛型来自于构造函数的第一个参数keySelector。KeyGroupStreamPartitioner&lt;T, K&gt; extends StreamPartitioner<t><br>StreamPartitioner<t> implements<br>        ChannelSelector&lt;SerializationDelegate&lt;StreamRecord<t>&gt;&gt;</t></t></t></p>
+<p>生成KeyGroupStreamPartitioner(类似于Operator)封装了ComparableKeySelector，然后PartitionTransformation封装了KeyGroupStreamPartitioner，然后KeyedStream封装了PartitionTransformation。<br><img src="media/15465045794719/15519530262226.jpg" alt=""><br>KeyGroupStreamPartitioner的两个泛型来自于构造函数的第一个参数keySelector。KeyGroupStreamPartitioner&lt;T, K&gt; extends StreamPartitioner<t><br>StreamPartitioner<t> implements<br>        ChannelSelector&lt;SerializationDelegate&lt;StreamRecord<t>&gt;&gt;</t></t></t></p>
 <h2 id="sum算子"><a href="#sum算子" class="headerlink" title="sum算子"></a>sum算子</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">private def aggregate(aggregationType: AggregationType, position: Int): DataStream[T] = &#123;</span><br><span class="line"></span><br><span class="line">  val reducer = aggregationType match &#123;</span><br><span class="line">    case AggregationType.SUM =&gt;</span><br><span class="line">      new SumAggregator(position, javaStream.getType, javaStream.getExecutionConfig)</span><br><span class="line">    case _ =&gt;</span><br><span class="line">      new ComparableAggregator(position, javaStream.getType, aggregationType, true,</span><br><span class="line">        javaStream.getExecutionConfig)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  val invokable =  new StreamGroupedReduce[T](reducer,</span><br><span class="line">    getType().createSerializer(getExecutionConfig))</span><br><span class="line">   </span><br><span class="line">  new DataStream[T](javaStream.transform(&quot;aggregation&quot;, javaStream.getType(),invokable))</span><br><span class="line">    .asInstanceOf[DataStream[T]]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>首先生成SumAggregator(类似于Function)，然后生成StreamGroupedReduce(类似于Operator)封装了SumAggregator。然后在KeyedStream.transform方法中，先用OneInputTransformation封装了StreamGroupedReduce。然后用SingleOutputStreamOperator封装了这个Transform。然后设置了新生成的Transformation的stateKeySelector和stateKeyType属性。</p>
-<h2 id="print算子"><a href="#print算子" class="headerlink" title="print算子"></a>print算子</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public DataStreamSink&lt;T&gt; print() &#123;</span><br><span class="line">	PrintSinkFunction&lt;T&gt; printFunction = new PrintSinkFunction&lt;&gt;();</span><br><span class="line">	return addSink(printFunction).name(&quot;Print to Std. Out&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>首先生成一个PrintSinkFunction<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public DataStreamSink&lt;T&gt; addSink(SinkFunction&lt;T&gt; sinkFunction) &#123;</span><br><span class="line"></span><br><span class="line">	// read the output type of the input Transform to coax out errors about MissingTypeInfo</span><br><span class="line">	transformation.getOutputType();</span><br><span class="line"></span><br><span class="line">	// configure the type if needed</span><br><span class="line">	if (sinkFunction instanceof InputTypeConfigurable) &#123;</span><br><span class="line">		((InputTypeConfigurable) sinkFunction).setInputType(getType(), getExecutionConfig());</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	StreamSink&lt;T&gt; sinkOperator = new StreamSink&lt;&gt;(clean(sinkFunction));</span><br><span class="line"></span><br><span class="line">	DataStreamSink&lt;T&gt; sink = new DataStreamSink&lt;&gt;(this, sinkOperator);</span><br><span class="line"></span><br><span class="line">	getExecutionEnvironment().addOperator(sink.getTransformation());</span><br><span class="line">	return sink;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>然后生成StreamSink封装了PrintSinkFunction，再生成SinkTransformation封装StreamSink，最后外面套一层DataStreamSink作为返回。</p>
-<p>最终形成的图如下所示：<br><img src="15465706985211.jpg" alt=""><br>StreamExecutionEnvironment.transformations中有4个transformation，分别是OneInputTransformation,OneInputTransformation,OneInputTransformation,SinkTransformation。<br><strong>Stream之间的区别在于，KeyedStream多了keySelector和keyType属性。</strong><br><strong>每个transformation都要指定maxParallelism, minResources, preferredResources, bufferTimeout, name, outputType、parallelism和slotSharingGroup。</strong><br><strong>每个Operator上面定义了chainingStrategy, combinedWatermark, input1Watermark, input2Watermark,其中StreamGroupedReduce中还有serializer属性。</strong><br>Function如果是RichFunction，会有StreamingRuntimeContext传入（包含Operator,RuntimeEnvironment），会有open方法<br>Operator在initializeState时，创建了StreamTaskStateInitializerImpl</p>
+<ol>
+<li>首先生成SumAggregator(类似于Function)；然后生成StreamGroupedReduce(类似于Operator)。接着调用DataStream.transform(transformation的名字、输出类型、Operator)</li>
+<li>在KeyedStream.transform方法中，先调用DataStream.transform；然后设置Transformation的stateKeySelector和stateKeyType属性。</li>
+</ol>
+<h2 id="print算子"><a href="#print算子" class="headerlink" title="print算子"></a>print算子</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public DataStreamSink&lt;T&gt; print() &#123;</span><br><span class="line">	PrintSinkFunction&lt;T&gt; printFunction = new PrintSinkFunction&lt;&gt;();</span><br><span class="line">	return addSink(printFunction).name(&quot;Print to Std. Out&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public DataStreamSink&lt;T&gt; addSink(SinkFunction&lt;T&gt; sinkFunction) &#123;</span><br><span class="line"></span><br><span class="line">	// read the output type of the input Transform to coax out errors about MissingTypeInfo</span><br><span class="line">	transformation.getOutputType();</span><br><span class="line"></span><br><span class="line">	// configure the type if needed</span><br><span class="line">	if (sinkFunction instanceof InputTypeConfigurable) &#123;</span><br><span class="line">		((InputTypeConfigurable) sinkFunction).setInputType(getType(), getExecutionConfig());</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	StreamSink&lt;T&gt; sinkOperator = new StreamSink&lt;&gt;(clean(sinkFunction));</span><br><span class="line"></span><br><span class="line">	DataStreamSink&lt;T&gt; sink = new DataStreamSink&lt;&gt;(this, sinkOperator);</span><br><span class="line"></span><br><span class="line">	getExecutionEnvironment().addOperator(sink.getTransformation());</span><br><span class="line">	return sink;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>过程：</p>
+<ol>
+<li>首先生成一个PrintSinkFunction(Function)；生成StreamSink封装PrintSinkFunction(Operator)</li>
+<li>生成SinkTransformation封装StreamSink</li>
+<li>DataStreamSink封装Transformation返回。</li>
+<li>将Transformation加入StreamExecutionEnvironment</li>
+</ol>
+<p>最终形成的图如下所示：<br><img src="media/15465045794719/15465706985211.jpg" alt=""><br>StreamExecutionEnvironment.transformations中有4个transformation，分别是OneInputTransformation, OneInputTransformation, OneInputTransformation, SinkTransformation</p>
+<p><strong>Stream之间的区别在于，KeyedStream多了keySelector和keyType属性</strong><br><strong>Operator之间的区别在于,StreamGroupedReduce中serializer属性。</strong><br>Function如果是RichFunction，会有StreamingRuntimeContext传入（包含Operator,RuntimeEnvironment），会有open方法<br>Operator在initializeState时，创建了StreamTaskStateInitializerImpl</p>
 <h2 id="StreamExecutionEnvironment-execute"><a href="#StreamExecutionEnvironment-execute" class="headerlink" title="StreamExecutionEnvironment.execute"></a>StreamExecutionEnvironment.execute</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">public JobExecutionResult execute(String jobName) throws Exception &#123;</span><br><span class="line">		// transform the streaming program into a JobGraph</span><br><span class="line">		StreamGraph streamGraph = getStreamGraph();</span><br><span class="line">		streamGraph.setJobName(jobName);</span><br><span class="line"></span><br><span class="line">		JobGraph jobGraph = streamGraph.getJobGraph();</span><br><span class="line">		jobGraph.setAllowQueuedScheduling(true);</span><br><span class="line"></span><br><span class="line">		Configuration configuration = new Configuration();</span><br><span class="line">		configuration.addAll(jobGraph.getJobConfiguration());</span><br><span class="line">		configuration.setString(TaskManagerOptions.MANAGED_MEMORY_SIZE, &quot;0&quot;);</span><br><span class="line"></span><br><span class="line">		// add (and override) the settings with what the user defined</span><br><span class="line">		configuration.addAll(this.configuration);</span><br><span class="line"></span><br><span class="line">		if (!configuration.contains(RestOptions.PORT)) &#123;</span><br><span class="line">			configuration.setInteger(RestOptions.PORT, 0);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		int numSlotsPerTaskManager = configuration.getInteger(TaskManagerOptions.NUM_TASK_SLOTS, jobGraph.getMaximumParallelism());</span><br><span class="line"></span><br><span class="line">		MiniClusterConfiguration cfg = new MiniClusterConfiguration.Builder()</span><br><span class="line">			.setConfiguration(configuration)</span><br><span class="line">			.setNumSlotsPerTaskManager(numSlotsPerTaskManager)</span><br><span class="line">			.build();</span><br><span class="line"></span><br><span class="line">		if (LOG.isInfoEnabled()) &#123;</span><br><span class="line">			LOG.info(&quot;Running job on local embedded Flink mini cluster&quot;);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		MiniCluster miniCluster = new MiniCluster(cfg);</span><br><span class="line"></span><br><span class="line">		try &#123;</span><br><span class="line">			miniCluster.start();</span><br><span class="line">			configuration.setInteger(RestOptions.PORT, miniCluster.getRestAddress().getPort());</span><br><span class="line"></span><br><span class="line">			return miniCluster.executeJobBlocking(jobGraph);</span><br><span class="line">		&#125;</span><br><span class="line">		finally &#123;</span><br><span class="line">			transformations.clear();</span><br><span class="line">			miniCluster.close();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
-<p>这一步骤比较长，分开来看：</p>
 <h3 id="StreamExecutionEnvironment-getStreamGraph"><a href="#StreamExecutionEnvironment-getStreamGraph" class="headerlink" title="StreamExecutionEnvironment.getStreamGraph"></a>StreamExecutionEnvironment.getStreamGraph</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@Internal</span><br><span class="line">public StreamGraph getStreamGraph() &#123;</span><br><span class="line">	if (transformations.size() &lt;= 0) &#123;</span><br><span class="line">		throw new IllegalStateException(&quot;No operators defined in streaming topology. Cannot execute.&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">	return StreamGraphGenerator.generate(this, transformations);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>转发给StreamGraphGenerator.generate<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public static StreamGraph generate(StreamExecutionEnvironment env, List&lt;StreamTransformation&lt;?&gt;&gt; transformations) &#123;</span><br><span class="line">	return new StreamGraphGenerator(env).generateInternal(transformations);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>先实例化一个StreamGraphGenerator，然后调用generateInternal。StreamGraphGenerator实例化时实例化StreamGraph，将Environment本身、Environment的executionConfig、Environment的checkpointConfig、Environment的chaining、Environment的stateBackend带到StreamGraph中。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">private StreamGraph generateInternal(List&lt;StreamTransformation&lt;?&gt;&gt; transformations) &#123;</span><br><span class="line">	for (StreamTransformation&lt;?&gt; transformation: transformations) &#123;</span><br><span class="line">		transform(transformation);</span><br><span class="line">	&#125;</span><br><span class="line">	return streamGraph;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>在generateInternal方法中，对于每个transformation，调用transform<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line">private Collection&lt;Integer&gt; transform(StreamTransformation&lt;?&gt; transform) &#123;</span><br><span class="line"></span><br><span class="line">		if (alreadyTransformed.containsKey(transform)) &#123;</span><br><span class="line">			return alreadyTransformed.get(transform);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		LOG.debug(&quot;Transforming &quot; + transform);</span><br><span class="line"></span><br><span class="line">		if (transform.getMaxParallelism() &lt;= 0) &#123;</span><br><span class="line"></span><br><span class="line">			// if the max parallelism hasn&apos;t been set, then first use the job wide max parallelism</span><br><span class="line">			// from theExecutionConfig.</span><br><span class="line">			int globalMaxParallelismFromConfig = env.getConfig().getMaxParallelism();</span><br><span class="line">			if (globalMaxParallelismFromConfig &gt; 0) &#123;</span><br><span class="line">				transform.setMaxParallelism(globalMaxParallelismFromConfig);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		// call at least once to trigger exceptions about MissingTypeInfo</span><br><span class="line">		transform.getOutputType();</span><br><span class="line"></span><br><span class="line">		Collection&lt;Integer&gt; transformedIds;</span><br><span class="line">		if (transform instanceof OneInputTransformation&lt;?, ?&gt;) &#123;</span><br><span class="line">			transformedIds = transformOneInputTransform((OneInputTransformation&lt;?, ?&gt;) transform);</span><br><span class="line">		&#125; else if (transform instanceof TwoInputTransformation&lt;?, ?, ?&gt;) &#123;</span><br><span class="line">			transformedIds = transformTwoInputTransform((TwoInputTransformation&lt;?, ?, ?&gt;) transform);</span><br><span class="line">		&#125; else if (transform instanceof SourceTransformation&lt;?&gt;) &#123;</span><br><span class="line">			transformedIds = transformSource((SourceTransformation&lt;?&gt;) transform);</span><br><span class="line">		&#125; else if (transform instanceof SinkTransformation&lt;?&gt;) &#123;</span><br><span class="line">			transformedIds = transformSink((SinkTransformation&lt;?&gt;) transform);</span><br><span class="line">		&#125; else if (transform instanceof UnionTransformation&lt;?&gt;) &#123;</span><br><span class="line">			transformedIds = transformUnion((UnionTransformation&lt;?&gt;) transform);</span><br><span class="line">		&#125; else if (transform instanceof SplitTransformation&lt;?&gt;) &#123;</span><br><span class="line">			transformedIds = transformSplit((SplitTransformation&lt;?&gt;) transform);</span><br><span class="line">		&#125; else if (transform instanceof SelectTransformation&lt;?&gt;) &#123;</span><br><span class="line">			transformedIds = transformSelect((SelectTransformation&lt;?&gt;) transform);</span><br><span class="line">		&#125; else if (transform instanceof FeedbackTransformation&lt;?&gt;) &#123;</span><br><span class="line">			transformedIds = transformFeedback((FeedbackTransformation&lt;?&gt;) transform);</span><br><span class="line">		&#125; else if (transform instanceof CoFeedbackTransformation&lt;?&gt;) &#123;</span><br><span class="line">			transformedIds = transformCoFeedback((CoFeedbackTransformation&lt;?&gt;) transform);</span><br><span class="line">		&#125; else if (transform instanceof PartitionTransformation&lt;?&gt;) &#123;</span><br><span class="line">			transformedIds = transformPartition((PartitionTransformation&lt;?&gt;) transform);</span><br><span class="line">		&#125; else if (transform instanceof SideOutputTransformation&lt;?&gt;) &#123;</span><br><span class="line">			transformedIds = transformSideOutput((SideOutputTransformation&lt;?&gt;) transform);</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			throw new IllegalStateException(&quot;Unknown transformation: &quot; + transform);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		// need this check because the iterate transformation adds itself before</span><br><span class="line">		// transforming the feedback edges</span><br><span class="line">		if (!alreadyTransformed.containsKey(transform)) &#123;</span><br><span class="line">			alreadyTransformed.put(transform, transformedIds);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		if (transform.getBufferTimeout() &gt;= 0) &#123;</span><br><span class="line">			streamGraph.setBufferTimeout(transform.getId(), transform.getBufferTimeout());</span><br><span class="line">		&#125;</span><br><span class="line">		if (transform.getUid() != null) &#123;</span><br><span class="line">			streamGraph.setTransformationUID(transform.getId(), transform.getUid());</span><br><span class="line">		&#125;</span><br><span class="line">		if (transform.getUserProvidedNodeHash() != null) &#123;</span><br><span class="line">			streamGraph.setTransformationUserHash(transform.getId(), transform.getUserProvidedNodeHash());</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		if (transform.getMinResources() != null &amp;&amp; transform.getPreferredResources() != null) &#123;</span><br><span class="line">			streamGraph.setResources(transform.getId(), transform.getMinResources(), transform.getPreferredResources());</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		return transformedIds;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure></p>
+<p>委托StreamGraphGenerator.generate生成StreamGraph<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public static StreamGraph generate(StreamExecutionEnvironment env, List&lt;StreamTransformation&lt;?&gt;&gt; transformations) &#123;</span><br><span class="line">	return new StreamGraphGenerator(env).generateInternal(transformations);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<ol>
+<li>做一个StreamGraphGenerator。其中给StreamGraph实例相应初始化</li>
+<li>调用其generateInternal</li>
+</ol>
 <table>
 <thead>
 <tr>
@@ -371,7 +426,7 @@
 </tr>
 <tr>
 <td>stateBackend</td>
-<td>defaultStateBackend</td>
+<td>environment.defaultStateBackend</td>
 </tr>
 <tr>
 <td>jobName</td>
@@ -379,7 +434,9 @@
 </tr>
 </tbody>
 </table>
-<p>对于每种不同的transformation，调用不同的逻辑。但基本原则都是在StreamGraph中生成对应的StreamNode。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">private StreamGraph generateInternal(List&lt;StreamTransformation&lt;?&gt;&gt; transformations) &#123;</span><br><span class="line">	for (StreamTransformation&lt;?&gt; transformation: transformations) &#123;</span><br><span class="line">		transform(transformation);</span><br><span class="line">	&#125;</span><br><span class="line">	return streamGraph;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在generateInternal方法中，对于每个transformation，调用transform<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line">private Collection&lt;Integer&gt; transform(StreamTransformation&lt;?&gt; transform) &#123;</span><br><span class="line"></span><br><span class="line">		if (alreadyTransformed.containsKey(transform)) &#123;</span><br><span class="line">			return alreadyTransformed.get(transform);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		LOG.debug(&quot;Transforming &quot; + transform);</span><br><span class="line"></span><br><span class="line">		if (transform.getMaxParallelism() &lt;= 0) &#123;</span><br><span class="line"></span><br><span class="line">			// if the max parallelism hasn&apos;t been set, then first use the job wide max parallelism</span><br><span class="line">			// from theExecutionConfig.</span><br><span class="line">			int globalMaxParallelismFromConfig = env.getConfig().getMaxParallelism();</span><br><span class="line">			if (globalMaxParallelismFromConfig &gt; 0) &#123;</span><br><span class="line">				transform.setMaxParallelism(globalMaxParallelismFromConfig);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		// call at least once to trigger exceptions about MissingTypeInfo</span><br><span class="line">		transform.getOutputType();</span><br><span class="line"></span><br><span class="line">		Collection&lt;Integer&gt; transformedIds;</span><br><span class="line">		if (transform instanceof OneInputTransformation&lt;?, ?&gt;) &#123;</span><br><span class="line">			transformedIds = transformOneInputTransform((OneInputTransformation&lt;?, ?&gt;) transform);</span><br><span class="line">		&#125; else if (transform instanceof TwoInputTransformation&lt;?, ?, ?&gt;) &#123;</span><br><span class="line">			transformedIds = transformTwoInputTransform((TwoInputTransformation&lt;?, ?, ?&gt;) transform);</span><br><span class="line">		&#125; else if (transform instanceof SourceTransformation&lt;?&gt;) &#123;</span><br><span class="line">			transformedIds = transformSource((SourceTransformation&lt;?&gt;) transform);</span><br><span class="line">		&#125; else if (transform instanceof SinkTransformation&lt;?&gt;) &#123;</span><br><span class="line">			transformedIds = transformSink((SinkTransformation&lt;?&gt;) transform);</span><br><span class="line">		&#125; else if (transform instanceof UnionTransformation&lt;?&gt;) &#123;</span><br><span class="line">			transformedIds = transformUnion((UnionTransformation&lt;?&gt;) transform);</span><br><span class="line">		&#125; else if (transform instanceof SplitTransformation&lt;?&gt;) &#123;</span><br><span class="line">			transformedIds = transformSplit((SplitTransformation&lt;?&gt;) transform);</span><br><span class="line">		&#125; else if (transform instanceof SelectTransformation&lt;?&gt;) &#123;</span><br><span class="line">			transformedIds = transformSelect((SelectTransformation&lt;?&gt;) transform);</span><br><span class="line">		&#125; else if (transform instanceof FeedbackTransformation&lt;?&gt;) &#123;</span><br><span class="line">			transformedIds = transformFeedback((FeedbackTransformation&lt;?&gt;) transform);</span><br><span class="line">		&#125; else if (transform instanceof CoFeedbackTransformation&lt;?&gt;) &#123;</span><br><span class="line">			transformedIds = transformCoFeedback((CoFeedbackTransformation&lt;?&gt;) transform);</span><br><span class="line">		&#125; else if (transform instanceof PartitionTransformation&lt;?&gt;) &#123;</span><br><span class="line">			transformedIds = transformPartition((PartitionTransformation&lt;?&gt;) transform);</span><br><span class="line">		&#125; else if (transform instanceof SideOutputTransformation&lt;?&gt;) &#123;</span><br><span class="line">			transformedIds = transformSideOutput((SideOutputTransformation&lt;?&gt;) transform);</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			throw new IllegalStateException(&quot;Unknown transformation: &quot; + transform);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		// need this check because the iterate transformation adds itself before</span><br><span class="line">		// transforming the feedback edges</span><br><span class="line">		if (!alreadyTransformed.containsKey(transform)) &#123;</span><br><span class="line">			alreadyTransformed.put(transform, transformedIds);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		if (transform.getBufferTimeout() &gt;= 0) &#123;</span><br><span class="line">			streamGraph.setBufferTimeout(transform.getId(), transform.getBufferTimeout());</span><br><span class="line">		&#125;</span><br><span class="line">		if (transform.getUid() != null) &#123;</span><br><span class="line">			streamGraph.setTransformationUID(transform.getId(), transform.getUid());</span><br><span class="line">		&#125;</span><br><span class="line">		if (transform.getUserProvidedNodeHash() != null) &#123;</span><br><span class="line">			streamGraph.setTransformationUserHash(transform.getId(), transform.getUserProvidedNodeHash());</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		if (transform.getMinResources() != null &amp;&amp; transform.getPreferredResources() != null) &#123;</span><br><span class="line">			streamGraph.setResources(transform.getId(), transform.getMinResources(), transform.getPreferredResources());</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		return transformedIds;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure></p>
+<p>对于每种不同的transformation，调用不同的逻辑。</p>
 <table>
 <thead>
 <tr>
@@ -393,28 +450,32 @@
 <td>id</td>
 </tr>
 <tr>
-<td>name</td>
-<td>operatorName</td>
+<td>slotSharingGroup计算而来</td>
+<td>slotSharingGroup</td>
+</tr>
+<tr>
+<td>coLocationGroupKey</td>
+<td>coLocationGroup</td>
 </tr>
 <tr>
 <td>operator</td>
 <td>operator</td>
+</tr>
+<tr>
+<td>name</td>
+<td>operatorName</td>
 </tr>
 <tr>
 <td></td>
 <td>outputSelectors</td>
 </tr>
 <tr>
-<td>根据不同的Transformation而不同</td>
+<td>根据不同的Transformation而不同 (SourceStreamTask,OneInputStreamTask)</td>
 <td>jobVertexClass</td>
 </tr>
 <tr>
-<td>slotSharingGroup</td>
-<td>slotSharingGroup</td>
-</tr>
-<tr>
-<td>coLocationGroupKey</td>
-<td>coLocationGroup</td>
+<td></td>
+<td></td>
 </tr>
 <tr>
 <td>input.getOutputType()</td>
@@ -425,12 +486,32 @@
 <td>typeSerializerOut</td>
 </tr>
 <tr>
+<td><strong><strong><strong><strong><em>**</em></strong></strong></strong></strong>以上为addOperator</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
 <td>parallelism</td>
 <td>parallelism</td>
 </tr>
 <tr>
 <td>maxParallelism</td>
 <td>maxParallelism</td>
+</tr>
+<tr>
+<td>如果Transformation的stateKeySelector有</td>
+<td>stateKeySerializer</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
 </tr>
 <tr>
 <td>bufferTimeout</td>
@@ -452,10 +533,6 @@
 <td>preferredResources</td>
 <td>preferredResources</td>
 </tr>
-<tr>
-<td>如果Transformation的stateKeySelector有</td>
-<td>stateKeySerializer</td>
-</tr>
 </tbody>
 </table>
 <table>
@@ -472,159 +549,249 @@
 </tr>
 <tr>
 <td>OneInputTransformation</td>
-<td>①transform(input)  ②streamGraph.addOperator ③考虑设置statePartitioner1,stateKeySerializer ④streamGraph.addEdge，在这个节点的input和它本身之间建立边</td>
+<td>①transform(input)  ②streamGraph.addOperator ③streamGraph.addEdge，在这个节点的input和它本身之间建立边</td>
 </tr>
 <tr>
 <td>PartitionTransformation</td>
-<td>①transform(input) ②对每个input新建一个虚拟ID并调用streamGraph.addVirtualPartitionNode</td>
+<td>①transform(input) ②对每个input新建一个虚拟ID并调用streamGraph.addVirtualPartitionNode。 在input和其对应的虚拟节点之间建立关联 (virtualId,originalId,partitioner)  ③返回virtualId</td>
 </tr>
 <tr>
 <td>SinkTransformation</td>
-<td>①transform(input) ②streamGraph.addOperator ③考虑设置statePartitioner1,stateKeySerializer ④streamGraph.addEdge，在这个节点的input和它本身之间建立边</td>
+<td>①transform(input) ②streamGraph.addOperator ③streamGraph.addEdge，在这个节点的input和它本身之间建立边</td>
 </tr>
 </tbody>
 </table>
-<p>以下详解主要方法：<br>streamGraph.addOperator(transformId, slotSharingGroup, coLocationGroupKey, operator, inType, outType, name)：7个参数传进来，取transformId, slotSharingGroup, coLocationGroupKey, operator, name再加1个vertexClass调用了addNode，然后根据inType和outType设置了StreamNode的serializer。</p>
-<p>streamGraph.addNode(transformId, slotSharingGroup, coLocationGroup, operatorObject, operatorName, vertexClass)：对传入的参数增加一个Environment和outputSelector新建了StreamNode(transformId, slotSharingGroup, coLocationGroup, operatorObject,operatorName, vertexClass, outputSelector, env)</p>
-<p>streamGraph.addEdge(upStreamVertexID,downStreamVertexID,typeNumber) ：主要是调用了addEdgeInternal。<br>addEdgeInternal：对于一般的input节点来说，先确认Partitioner，然后再创建StreamEdge(sourceVertex, targetVertex, typeNumber, outputPartitioner)，最终把StreamEdge加入到两端的StreamNode中。<br>对于input节点是虚拟节点的情况，重新计算背后指向的真正节点，并递归调用addEdgeInternal<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">	private void addEdgeInternal(Integer upStreamVertexID,</span><br><span class="line">			Integer downStreamVertexID,</span><br><span class="line">			int typeNumber,</span><br><span class="line">			StreamPartitioner&lt;?&gt; partitioner,</span><br><span class="line">			List&lt;String&gt; outputNames,</span><br><span class="line">			OutputTag outputTag) &#123;</span><br><span class="line"></span><br><span class="line">		if (virtualSideOutputNodes.containsKey(upStreamVertexID)) &#123;</span><br><span class="line">			int virtualId = upStreamVertexID;</span><br><span class="line">			upStreamVertexID = virtualSideOutputNodes.get(virtualId).f0;</span><br><span class="line">			if (outputTag == null) &#123;</span><br><span class="line">				outputTag = virtualSideOutputNodes.get(virtualId).f1;</span><br><span class="line">			&#125;</span><br><span class="line">			addEdgeInternal(upStreamVertexID, downStreamVertexID, typeNumber, partitioner, null, outputTag);</span><br><span class="line">		&#125; else if (virtualSelectNodes.containsKey(upStreamVertexID)) &#123;</span><br><span class="line">			int virtualId = upStreamVertexID;</span><br><span class="line">			upStreamVertexID = virtualSelectNodes.get(virtualId).f0;</span><br><span class="line">			if (outputNames.isEmpty()) &#123;</span><br><span class="line">				// selections that happen downstream override earlier selections</span><br><span class="line">				outputNames = virtualSelectNodes.get(virtualId).f1;</span><br><span class="line">			&#125;</span><br><span class="line">			addEdgeInternal(upStreamVertexID, downStreamVertexID, typeNumber, partitioner, outputNames, outputTag);</span><br><span class="line">		&#125; else if (virtualPartitionNodes.containsKey(upStreamVertexID)) &#123;</span><br><span class="line">			int virtualId = upStreamVertexID;</span><br><span class="line">			upStreamVertexID = virtualPartitionNodes.get(virtualId).f0;</span><br><span class="line">			if (partitioner == null) &#123;</span><br><span class="line">				partitioner = virtualPartitionNodes.get(virtualId).f1;</span><br><span class="line">			&#125;</span><br><span class="line">			addEdgeInternal(upStreamVertexID, downStreamVertexID, typeNumber, partitioner, outputNames, outputTag);</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			StreamNode upstreamNode = getStreamNode(upStreamVertexID);</span><br><span class="line">			StreamNode downstreamNode = getStreamNode(downStreamVertexID);</span><br><span class="line"></span><br><span class="line">			// If no partitioner was specified and the parallelism of upstream and downstream</span><br><span class="line">			// operator matches use forward partitioning, use rebalance otherwise.</span><br><span class="line">			if (partitioner == null &amp;&amp; upstreamNode.getParallelism() == downstreamNode.getParallelism()) &#123;</span><br><span class="line">				partitioner = new ForwardPartitioner&lt;Object&gt;();</span><br><span class="line">			&#125; else if (partitioner == null) &#123;</span><br><span class="line">				partitioner = new RebalancePartitioner&lt;Object&gt;();</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			if (partitioner instanceof ForwardPartitioner) &#123;</span><br><span class="line">				if (upstreamNode.getParallelism() != downstreamNode.getParallelism()) &#123;</span><br><span class="line">					throw new UnsupportedOperationException(&quot;Forward partitioning does not allow &quot; +</span><br><span class="line">							&quot;change of parallelism. Upstream operation: &quot; + upstreamNode + &quot; parallelism: &quot; + upstreamNode.getParallelism() +</span><br><span class="line">							&quot;, downstream operation: &quot; + downstreamNode + &quot; parallelism: &quot; + downstreamNode.getParallelism() +</span><br><span class="line">							&quot; You must use another partitioning strategy, such as broadcast, rebalance, shuffle or global.&quot;);</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			StreamEdge edge = new StreamEdge(upstreamNode, downstreamNode, typeNumber, outputNames, partitioner, outputTag);</span><br><span class="line"></span><br><span class="line">			getStreamNode(edge.getSourceId()).addOutEdge(edge);</span><br><span class="line">			getStreamNode(edge.getTargetId()).addInEdge(edge);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">``` </span><br><span class="line"></span><br><span class="line"></span><br><span class="line">最终生成的StreamGraph如下图所示，总之在这一步：由StreamExecutionEnvironment的局部Transformation出发，由Transformation节点生成StreamNode，但有些Transformation没有进入StreamGraph；确定了边，边决定了数据路由到下游的方式。</span><br><span class="line">![-w941](15466760243164.jpg)</span><br><span class="line"></span><br><span class="line">### 由StreamGraph生成JobGraph</span><br></pre></td></tr></table></figure></p>
-<p>private JobGraph createJobGraph() {</p>
-<pre><code>    // make sure that all vertices start immediately
-    jobGraph.setScheduleMode(ScheduleMode.EAGER);
-
-    // Generate deterministic hashes for the nodes in order to identify them across
-    // submission iff they didn&apos;t change.
-    Map&lt;Integer, byte[]&gt; hashes = defaultStreamGraphHasher.traverseStreamGraphAndGenerateHashes(streamGraph);
-
-    // Generate legacy version hashes for backwards compatibility
-    List&lt;Map&lt;Integer, byte[]&gt;&gt; legacyHashes = new ArrayList&lt;&gt;(legacyStreamGraphHashers.size());
-    for (StreamGraphHasher hasher : legacyStreamGraphHashers) {
-        legacyHashes.add(hasher.traverseStreamGraphAndGenerateHashes(streamGraph));
-    }
-
-    Map&lt;Integer, List&lt;Tuple2&lt;byte[], byte[]&gt;&gt;&gt; chainedOperatorHashes = new HashMap&lt;&gt;();
-
-    setChaining(hashes, legacyHashes, chainedOperatorHashes);
-
-    setPhysicalEdges();
-
-    setSlotSharingAndCoLocation();
-
-    configureCheckpointing();
-
-    JobGraphGenerator.addUserArtifactEntries(streamGraph.getEnvironment().getCachedFiles(), jobGraph);
-
-    // set the ExecutionConfig last when it has been finalized
-    try {
-        jobGraph.setExecutionConfig(streamGraph.getExecutionConfig());
-    }
-    catch (IOException e) {
-        throw new IllegalConfigurationException(&quot;Could not serialize the ExecutionConfig.&quot; +
-                &quot;This indicates that non-serializable types (like custom serializers) were registered&quot;);
-    }
-
-    return jobGraph;
-}
-</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">先生成StreamingJobGraphGenerator，然后再调用其createJobGraph方法。在StreamingJobGraphGenerator中实例化了JobGraph，设置了jobID( new JobID() )和jobName。接着在createJobGraph中，首先defaultStreamGraphHasher.traverseStreamGraphAndGenerateHashes(streamGraph);为每个StreamGraph节点生成Hash码。接着调用setChaining </span><br><span class="line"></span><br><span class="line">#### 调用setChaining</span><br></pre></td></tr></table></figure>
-<pre><code>private void setChaining(Map&lt;Integer, byte[]&gt; hashes, List&lt;Map&lt;Integer, byte[]&gt;&gt; legacyHashes, Map&lt;Integer, List&lt;Tuple2&lt;byte[], byte[]&gt;&gt;&gt; chainedOperatorHashes) {
-    for (Integer sourceNodeId : streamGraph.getSourceIDs()) {
-        createChain(sourceNodeId, sourceNodeId, hashes, legacyHashes, 0, chainedOperatorHashes);
-    }
-}
-</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在setChaining中，从每个source出发，调用createChain</span><br></pre></td></tr></table></figure>
-<p>private List<streamedge> createChain(<br>            Integer startNodeId,<br>            Integer currentNodeId,<br>            Map&lt;Integer, byte[]&gt; hashes,<br>            List&lt;Map&lt;Integer, byte[]&gt;&gt; legacyHashes,<br>            int chainIndex,<br>            Map&lt;Integer, List&lt;Tuple2&lt;byte[], byte[]&gt;&gt;&gt; chainedOperatorHashes) {</streamedge></p>
-<pre><code>if (!builtVertices.contains(startNodeId)) {
-
-    List&lt;StreamEdge&gt; transitiveOutEdges = new ArrayList&lt;StreamEdge&gt;();
-
-    List&lt;StreamEdge&gt; chainableOutputs = new ArrayList&lt;StreamEdge&gt;();
-    List&lt;StreamEdge&gt; nonChainableOutputs = new ArrayList&lt;StreamEdge&gt;();
-
-    for (StreamEdge outEdge : streamGraph.getStreamNode(currentNodeId).getOutEdges()) {
-        if (isChainable(outEdge, streamGraph)) {
-            chainableOutputs.add(outEdge);
-        } else {
-            nonChainableOutputs.add(outEdge);
-        }
-    }
-
-    for (StreamEdge chainable : chainableOutputs) {
-        transitiveOutEdges.addAll(
-                createChain(startNodeId, chainable.getTargetId(), hashes, legacyHashes, chainIndex + 1, chainedOperatorHashes));
-    }
-
-    for (StreamEdge nonChainable : nonChainableOutputs) {
-        transitiveOutEdges.add(nonChainable);
-        createChain(nonChainable.getTargetId(), nonChainable.getTargetId(), hashes, legacyHashes, 0, chainedOperatorHashes);
-    }
-</code></pre><p>//执行顺序，整体上来看，是以节点为树的深度优先遍历（函数有源参数和目的参数，中间可能会切源，目的参数随着遍历到的节点走）<br>//每一个源和它后面的所有能连上的节点在子节点执行完之后都会执行下面这段代码<br>//假设没有断边，那么就是一个标准的深度优先遍历</p>
-<pre><code>List&lt;Tuple2&lt;byte[], byte[]&gt;&gt; operatorHashes =
-    chainedOperatorHashes.computeIfAbsent(startNodeId, k -&gt; new ArrayList&lt;&gt;());
-
-byte[] primaryHashBytes = hashes.get(currentNodeId);
-
-for (Map&lt;Integer, byte[]&gt; legacyHash : legacyHashes) {
-    operatorHashes.add(new Tuple2&lt;&gt;(primaryHashBytes, legacyHash.get(currentNodeId)));
-}
-
-
-chainedNames.put(currentNodeId, createChainedName(currentNodeId, chainableOutputs));
-chainedMinResources.put(currentNodeId, createChainedMinResources(currentNodeId, chainableOutputs));
-chainedPreferredResources.put(currentNodeId, createChainedPreferredResources(currentNodeId, chainableOutputs));
-
-StreamConfig config = currentNodeId.equals(startNodeId)
-        ? createJobVertex(startNodeId, hashes, legacyHashes, chainedOperatorHashes)
-        : new StreamConfig(new Configuration());
-
-setVertexConfig(currentNodeId, config, chainableOutputs, nonChainableOutputs);
-
-if (currentNodeId.equals(startNodeId)) {
-</code></pre><p>//设置config属性<br>                config.setChainStart();<br>                config.setChainIndex(0);<br>                config.setOperatorName(streamGraph.getStreamNode(currentNodeId).getOperatorName());<br>                config.setOutEdgesInOrder(transitiveOutEdges);<br>                config.setOutEdges(streamGraph.getStreamNode(currentNodeId).getOutEdges());</p>
-<pre><code>            for (StreamEdge edge : transitiveOutEdges) {
-                connect(startNodeId, edge);
-            }
-
-            config.setTransitiveChainedTaskConfigs(chainedConfigs.get(startNodeId));
-
-        } else {
-            Map&lt;Integer, StreamConfig&gt; chainedConfs = chainedConfigs.get(startNodeId);
-
-            if (chainedConfs == null) {
-                chainedConfigs.put(startNodeId, new HashMap&lt;Integer, StreamConfig&gt;());
-            }
-            config.setChainIndex(chainIndex);
-            StreamNode node = streamGraph.getStreamNode(currentNodeId);
-            config.setOperatorName(node.getOperatorName());
-            chainedConfigs.get(startNodeId).put(currentNodeId, config);
-        }
-
-        config.setOperatorID(new OperatorID(primaryHashBytes));
-
-        if (chainableOutputs.isEmpty()) {
-            config.setChainEnd();
-        }
-        return transitiveOutEdges;
-
-    } else {
-        return new ArrayList&lt;&gt;();
-    }
-}
-</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">| JobGraph | 来源 | </span><br><span class="line">| --- | --- | </span><br><span class="line">| jobId | new JobID() |</span><br><span class="line">| jobName | StreamGraph.jobName |</span><br><span class="line">| serializedExecutionConfig | StreamGraph.executionConfig |</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">首先创建JobVertex，对应的属性和来源分别为：</span><br><span class="line"></span><br><span class="line">| JobVertex | 来源 | </span><br><span class="line">| --- | --- | </span><br><span class="line">| name | StreamNode.operatorName串 |</span><br><span class="line">| id | JobVertexID(hash) |</span><br><span class="line">| idAlternatives(没用) |  |</span><br><span class="line">| operatorIDs | OperatorID(hash)集合 |</span><br><span class="line">| operatorIdsAlternatives(没用) |  |</span><br><span class="line">| minResources | StreamNode.minResources串 |</span><br><span class="line">| preferredResources | StreamNode.preferredResources 串 |</span><br><span class="line">| invokableClassName | StreamNode.jobVertexClass|</span><br><span class="line">| isStoppable | StreamNode.jobVertexClass |</span><br><span class="line">| parallelism | StreamNode.parallelism |</span><br><span class="line">| maxParallelism | StreamNode.maxParallelism |</span><br><span class="line">| results | IDS集合 |</span><br><span class="line">| inputs | JobEdge集合 |</span><br><span class="line"></span><br><span class="line">接着创建StreamConfig，其值和来源分别为：</span><br><span class="line"></span><br><span class="line">| StreamConfig | 来源 | </span><br><span class="line">| --- | --- | </span><br><span class="line">| setVertexID | StreamNode.id |</span><br><span class="line">| setBufferTimeout | StreamNode.bufferTimeout |</span><br><span class="line">| setTypeSerializerIn1 | StreamNode.typeSerializerIn1 |</span><br><span class="line">| setTypeSerializerIn2 | StreamNode.typeSerializerIn2 |</span><br><span class="line">| setTypeSerializerOut | StreamNode.typeSerializerOut |</span><br><span class="line">| setStreamOperator | StreamNode.operator |</span><br><span class="line">| setOutputSelectors | StreamNode.outputSelectors |</span><br><span class="line">| setNumberOfOutputs | 每个StreamNode的outEdges为断的数量 |</span><br><span class="line">| setNonChainedOutputs | 每个StreamNode的outEdges为断的 |</span><br><span class="line">| setChainedOutputs | 每个StreamNode的outEdges为非断的 |</span><br><span class="line">| setTimeCharacteristic | StreamGraph.Environment.timeCharacteristic |</span><br><span class="line">| setStateBackend | StreamGraph.stateBackend |</span><br><span class="line">| setStatePartitioner | StreamNode.statePartitioner1 |</span><br><span class="line">| setStatePartitioner | StreamNode.statePartitioner2 |</span><br><span class="line">| setStateKeySerializer | StreamNode.stateKeySerializer |</span><br><span class="line">| setChainIndex | 在链上的位置，从0开始 |</span><br><span class="line">| setOperatorName | StreamNode.operatorName |</span><br><span class="line">| setOutEdgesInOrder | 传递断边集合StreamEdge |</span><br><span class="line">| setOutEdges | StreamNode的所有出边 |</span><br><span class="line">| setTransitiveChainedTaskConfigs | 链上的StreamConfig,不包括源 |</span><br><span class="line">| setOperatorID | OperatorID(hash) |</span><br><span class="line">| setNumberOfInputs | JobGraph中的输入数 |</span><br><span class="line">| setInPhysicalEdges |  |</span><br><span class="line"></span><br><span class="line">connect方法：</span><br><span class="line">physicalEdgesInOrder-把断边添加进去</span><br><span class="line">调用JobVertex.connectNewDataSetAsInput</span><br></pre></td></tr></table></figure>
-<p>jobEdge = downStreamVertex.connectNewDataSetAsInput(<br>                    headVertex,<br>                    DistributionPattern.ALL_TO_ALL,<br>                    ResultPartitionType.PIPELINED_BOUNDED);<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">downStreamVertex.connectNewDataSetAsInput创建jobEdge</span><br></pre></td></tr></table></figure></p>
-<pre><code>public JobEdge connectNewDataSetAsInput(
-        JobVertex input,
-        DistributionPattern distPattern,
-        ResultPartitionType partitionType) {
-
-    IntermediateDataSet dataSet = input.createAndAddResultDataSet(partitionType);
-
-    JobEdge edge = new JobEdge(dataSet, this, distPattern);
-    this.inputs.add(edge);
-    dataSet.addConsumer(edge);
-    return edge;
-}
-</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">![](15468309151085.jpg)</span><br><span class="line"></span><br><span class="line">#### setPhysicalEdges</span><br><span class="line">为对应节点（JobVertex）的StreamConfig设置inStreamEdges， List[StreamEdge]</span><br><span class="line"></span><br><span class="line">#### setSlotSharingAndCoLocation</span><br><span class="line">为JobVertex设置setSlotSharingGroup</span><br><span class="line"></span><br><span class="line">#### 设置Checkpoint</span><br></pre></td></tr></table></figure>
-<p>JobCheckpointingSettings settings = new JobCheckpointingSettings(<br>            triggerVertices,<br>            ackVertices,<br>            commitVertices,<br>            new CheckpointCoordinatorConfiguration(<br>                interval,<br>                cfg.getCheckpointTimeout(),<br>                cfg.getMinPauseBetweenCheckpoints(),<br>                cfg.getMaxConcurrentCheckpoints(),<br>                retentionAfterTermination,<br>                isExactlyOnce),<br>            serializedStateBackend,<br>            serializedHooks);<br><code>`</code></p>
-<p>总之，JobGraph在StreamGraph的基础上，形成了这样的数据结构：<br><img src="15510811705376.jpg" alt="-w1000"><br>每个JobVertex的configuration中有属性指向对应StreamNode的出边。<br>每个JobVertex的configuration中有属性指向从它出发的传递断边。<br>每个JobVertex的configuration中有属性指向链上的StreamConfig集合，每个StreamConfig指向对应StreamNode的出边。<br>每个JobVertex的configuration中有属性指向它的入边</p>
+<p>在StreamGraph.addEdge中主要是调用了addEdgeInternal。在addEdgeInternal中对于一般的input节点来说，先确认Partitioner，然后再创建StreamEdge，最终把StreamEdge加入到两端的StreamNode中。对于input节点是虚拟节点的情况，重新计算背后指向的真正节点，并递归调用addEdgeInternal。</p>
+<p>最终生成的StreamGraph如下图所示，总之在这一步：由StreamExecutionEnvironment的局部Transformation出发，由Transformation节点映射生成StreamNode，但有些Transformation没有进入StreamGraph；确定了边，边决定了数据路由到下游的方式。<br><img src="media/15465045794719/15466760243164.jpg" alt="-w941"></p>
+<h3 id="由StreamGraph生成JobGraph"><a href="#由StreamGraph生成JobGraph" class="headerlink" title="由StreamGraph生成JobGraph"></a>由StreamGraph生成JobGraph</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">private JobGraph createJobGraph() &#123;</span><br><span class="line"></span><br><span class="line">		// make sure that all vertices start immediately</span><br><span class="line">		jobGraph.setScheduleMode(ScheduleMode.EAGER);</span><br><span class="line"></span><br><span class="line">		// Generate deterministic hashes for the nodes in order to identify them across</span><br><span class="line">		// submission iff they didn&apos;t change.</span><br><span class="line">		Map&lt;Integer, byte[]&gt; hashes = defaultStreamGraphHasher.traverseStreamGraphAndGenerateHashes(streamGraph);</span><br><span class="line"></span><br><span class="line">		// Generate legacy version hashes for backwards compatibility</span><br><span class="line">		List&lt;Map&lt;Integer, byte[]&gt;&gt; legacyHashes = new ArrayList&lt;&gt;(legacyStreamGraphHashers.size());</span><br><span class="line">		for (StreamGraphHasher hasher : legacyStreamGraphHashers) &#123;</span><br><span class="line">			legacyHashes.add(hasher.traverseStreamGraphAndGenerateHashes(streamGraph));</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		Map&lt;Integer, List&lt;Tuple2&lt;byte[], byte[]&gt;&gt;&gt; chainedOperatorHashes = new HashMap&lt;&gt;();</span><br><span class="line"></span><br><span class="line">		setChaining(hashes, legacyHashes, chainedOperatorHashes);</span><br><span class="line"></span><br><span class="line">		setPhysicalEdges();</span><br><span class="line"></span><br><span class="line">		setSlotSharingAndCoLocation();</span><br><span class="line"></span><br><span class="line">		configureCheckpointing();</span><br><span class="line"></span><br><span class="line">		JobGraphGenerator.addUserArtifactEntries(streamGraph.getEnvironment().getCachedFiles(), jobGraph);</span><br><span class="line"></span><br><span class="line">		// set the ExecutionConfig last when it has been finalized</span><br><span class="line">		try &#123;</span><br><span class="line">			jobGraph.setExecutionConfig(streamGraph.getExecutionConfig());</span><br><span class="line">		&#125;</span><br><span class="line">		catch (IOException e) &#123;</span><br><span class="line">			throw new IllegalConfigurationException(&quot;Could not serialize the ExecutionConfig.&quot; +</span><br><span class="line">					&quot;This indicates that non-serializable types (like custom serializers) were registered&quot;);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		return jobGraph;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>先生成StreamingJobGraphGenerator（在其中实例化了JobGraph），然后调用其createJobGraph方法。</p>
+<table>
+<thead>
+<tr>
+<th>JobGraph</th>
+<th>来源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>jobId</td>
+<td>new JobID()</td>
+</tr>
+<tr>
+<td>jobName</td>
+<td>StreamGraph.jobName</td>
+</tr>
+<tr>
+<td>serializedExecutionConfig</td>
+<td>StreamGraph.executionConfig</td>
+</tr>
+</tbody>
+</table>
+<p>接着在createJobGraph中，首先defaultStreamGraphHasher.traverseStreamGraphAndGenerateHashes(streamGraph);为每个StreamGraph节点生成Hash码。接着调用setChaining </p>
+<h4 id="调用setChaining"><a href="#调用setChaining" class="headerlink" title="调用setChaining"></a>调用setChaining</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">private void setChaining(Map&lt;Integer, byte[]&gt; hashes, List&lt;Map&lt;Integer, byte[]&gt;&gt; legacyHashes, Map&lt;Integer, List&lt;Tuple2&lt;byte[], byte[]&gt;&gt;&gt; chainedOperatorHashes) &#123;</span><br><span class="line">	for (Integer sourceNodeId : streamGraph.getSourceIDs()) &#123;</span><br><span class="line">		createChain(sourceNodeId, sourceNodeId, hashes, legacyHashes, 0, chainedOperatorHashes);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在setChaining中，从每个source出发，调用createChain</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line">private List&lt;StreamEdge&gt; createChain(</span><br><span class="line">			Integer startNodeId,</span><br><span class="line">			Integer currentNodeId,</span><br><span class="line">			Map&lt;Integer, byte[]&gt; hashes,</span><br><span class="line">			List&lt;Map&lt;Integer, byte[]&gt;&gt; legacyHashes,</span><br><span class="line">			int chainIndex,</span><br><span class="line">			Map&lt;Integer, List&lt;Tuple2&lt;byte[], byte[]&gt;&gt;&gt; chainedOperatorHashes) &#123;</span><br><span class="line"></span><br><span class="line">		if (!builtVertices.contains(startNodeId)) &#123;</span><br><span class="line"></span><br><span class="line">			List&lt;StreamEdge&gt; transitiveOutEdges = new ArrayList&lt;StreamEdge&gt;();</span><br><span class="line"></span><br><span class="line">			List&lt;StreamEdge&gt; chainableOutputs = new ArrayList&lt;StreamEdge&gt;();</span><br><span class="line">			List&lt;StreamEdge&gt; nonChainableOutputs = new ArrayList&lt;StreamEdge&gt;();</span><br><span class="line"></span><br><span class="line">			for (StreamEdge outEdge : streamGraph.getStreamNode(currentNodeId).getOutEdges()) &#123;</span><br><span class="line">				if (isChainable(outEdge, streamGraph)) &#123;</span><br><span class="line">					chainableOutputs.add(outEdge);</span><br><span class="line">				&#125; else &#123;</span><br><span class="line">					nonChainableOutputs.add(outEdge);</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			for (StreamEdge chainable : chainableOutputs) &#123;</span><br><span class="line">				transitiveOutEdges.addAll(</span><br><span class="line">						createChain(startNodeId, chainable.getTargetId(), hashes, legacyHashes, chainIndex + 1, chainedOperatorHashes));</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			for (StreamEdge nonChainable : nonChainableOutputs) &#123;</span><br><span class="line">				transitiveOutEdges.add(nonChainable);</span><br><span class="line">				createChain(nonChainable.getTargetId(), nonChainable.getTargetId(), hashes, legacyHashes, 0, chainedOperatorHashes);</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">//执行顺序，整体上来看，是以节点为树的深度优先遍历（函数有源参数和目的参数，中间可能会切源，目的参数随着遍历到的节点走）</span><br><span class="line">//每一个源和它后面的所有能连上的节点在子节点执行完之后都会执行下面这段代码</span><br><span class="line">//假设没有断边，那么就是一个标准的深度优先遍历</span><br><span class="line"></span><br><span class="line">			List&lt;Tuple2&lt;byte[], byte[]&gt;&gt; operatorHashes =</span><br><span class="line">				chainedOperatorHashes.computeIfAbsent(startNodeId, k -&gt; new ArrayList&lt;&gt;());</span><br><span class="line"></span><br><span class="line">			byte[] primaryHashBytes = hashes.get(currentNodeId);</span><br><span class="line"></span><br><span class="line">			for (Map&lt;Integer, byte[]&gt; legacyHash : legacyHashes) &#123;</span><br><span class="line">				operatorHashes.add(new Tuple2&lt;&gt;(primaryHashBytes, legacyHash.get(currentNodeId)));</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">			chainedNames.put(currentNodeId, createChainedName(currentNodeId, chainableOutputs));</span><br><span class="line">			chainedMinResources.put(currentNodeId, createChainedMinResources(currentNodeId, chainableOutputs));</span><br><span class="line">			chainedPreferredResources.put(currentNodeId, createChainedPreferredResources(currentNodeId, chainableOutputs));</span><br><span class="line"></span><br><span class="line">			StreamConfig config = currentNodeId.equals(startNodeId)</span><br><span class="line">					? createJobVertex(startNodeId, hashes, legacyHashes, chainedOperatorHashes)</span><br><span class="line">					: new StreamConfig(new Configuration());</span><br><span class="line"></span><br><span class="line">			setVertexConfig(currentNodeId, config, chainableOutputs, nonChainableOutputs);</span><br><span class="line"></span><br><span class="line">			if (currentNodeId.equals(startNodeId)) &#123;</span><br><span class="line">//设置config属性</span><br><span class="line">				config.setChainStart();</span><br><span class="line">				config.setChainIndex(0);</span><br><span class="line">				config.setOperatorName(streamGraph.getStreamNode(currentNodeId).getOperatorName());</span><br><span class="line">				config.setOutEdgesInOrder(transitiveOutEdges);</span><br><span class="line">				config.setOutEdges(streamGraph.getStreamNode(currentNodeId).getOutEdges());</span><br><span class="line"></span><br><span class="line">				for (StreamEdge edge : transitiveOutEdges) &#123;</span><br><span class="line">					connect(startNodeId, edge);</span><br><span class="line">				&#125;</span><br><span class="line"></span><br><span class="line">				config.setTransitiveChainedTaskConfigs(chainedConfigs.get(startNodeId));</span><br><span class="line"></span><br><span class="line">			&#125; else &#123;</span><br><span class="line">				Map&lt;Integer, StreamConfig&gt; chainedConfs = chainedConfigs.get(startNodeId);</span><br><span class="line"></span><br><span class="line">				if (chainedConfs == null) &#123;</span><br><span class="line">					chainedConfigs.put(startNodeId, new HashMap&lt;Integer, StreamConfig&gt;());</span><br><span class="line">				&#125;</span><br><span class="line">				config.setChainIndex(chainIndex);</span><br><span class="line">				StreamNode node = streamGraph.getStreamNode(currentNodeId);</span><br><span class="line">				config.setOperatorName(node.getOperatorName());</span><br><span class="line">				chainedConfigs.get(startNodeId).put(currentNodeId, config);</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			config.setOperatorID(new OperatorID(primaryHashBytes));</span><br><span class="line"></span><br><span class="line">			if (chainableOutputs.isEmpty()) &#123;</span><br><span class="line">				config.setChainEnd();</span><br><span class="line">			&#125;</span><br><span class="line">			return transitiveOutEdges;</span><br><span class="line"></span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			return new ArrayList&lt;&gt;();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>注意，生成JobVertex的原则是根据startNodeId来划分的。</p>
+<p>首先创建JobVertex，对应的属性和来源分别为：</p>
+<table>
+<thead>
+<tr>
+<th>JobVertex</th>
+<th>来源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>JobVertexID(hash)</td>
+</tr>
+<tr>
+<td>operatorIDs</td>
+<td>串上的OperatorID(hash)集合</td>
+</tr>
+<tr>
+<td>name</td>
+<td>StreamNode.operatorName串</td>
+</tr>
+<tr>
+<td>minResources</td>
+<td>StreamNode.minResources串</td>
+</tr>
+<tr>
+<td>preferredResources</td>
+<td>StreamNode.preferredResources 串</td>
+</tr>
+<tr>
+<td>invokableClassName</td>
+<td>StreamNode.jobVertexClass</td>
+</tr>
+<tr>
+<td>isStoppable</td>
+<td>StreamNode.jobVertexClass推导而来</td>
+</tr>
+<tr>
+<td>parallelism</td>
+<td>StreamNode.parallelism</td>
+</tr>
+<tr>
+<td>maxParallelism</td>
+<td>StreamNode.maxParallelism</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>results</td>
+<td>IDS集合</td>
+</tr>
+<tr>
+<td>inputs</td>
+<td>JobEdge集合</td>
+</tr>
+</tbody>
+</table>
+<p>接着创建StreamConfig，其值和来源分别为：</p>
+<table>
+<thead>
+<tr>
+<th>StreamConfig</th>
+<th>来源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>setVertexID</td>
+<td>StreamNode.id</td>
+</tr>
+<tr>
+<td>setBufferTimeout</td>
+<td>StreamNode.bufferTimeout</td>
+</tr>
+<tr>
+<td>setTypeSerializerIn1</td>
+<td>StreamNode.typeSerializerIn1</td>
+</tr>
+<tr>
+<td>setTypeSerializerIn2</td>
+<td>StreamNode.typeSerializerIn2</td>
+</tr>
+<tr>
+<td>setTypeSerializerOut</td>
+<td>StreamNode.typeSerializerOut</td>
+</tr>
+<tr>
+<td>setStreamOperator</td>
+<td>StreamNode.operator</td>
+</tr>
+<tr>
+<td>setOutputSelectors</td>
+<td>StreamNode.outputSelectors</td>
+</tr>
+<tr>
+<td>setNumberOfOutputs</td>
+<td>每个StreamNode的outEdges为断的数量</td>
+</tr>
+<tr>
+<td>setNonChainedOutputs</td>
+<td>每个StreamNode的outEdges为断的</td>
+</tr>
+<tr>
+<td>setChainedOutputs</td>
+<td>每个StreamNode的outEdges为非断的</td>
+</tr>
+<tr>
+<td>setTimeCharacteristic</td>
+<td>StreamGraph.Environment.timeCharacteristic</td>
+</tr>
+<tr>
+<td>setStateBackend</td>
+<td>StreamGraph.stateBackend</td>
+</tr>
+<tr>
+<td>setStatePartitioner</td>
+<td>StreamNode.statePartitioner1</td>
+</tr>
+<tr>
+<td>setStatePartitioner</td>
+<td>StreamNode.statePartitioner2</td>
+</tr>
+<tr>
+<td>setStateKeySerializer</td>
+<td>StreamNode.stateKeySerializer</td>
+</tr>
+<tr>
+<td>setOperatorID</td>
+<td>OperatorID(hash)</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>setChainIndex</td>
+<td>在链上的位置，从0开始</td>
+</tr>
+<tr>
+<td>setOperatorName</td>
+<td>StreamNode.operatorName</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>*setOutEdgesInOrder</td>
+<td>传递断边集合StreamEdge</td>
+</tr>
+<tr>
+<td>*setOutEdges</td>
+<td>StreamNode的所有出边</td>
+</tr>
+<tr>
+<td>*setTransitiveChainedTaskConfigs</td>
+<td>链上的StreamConfig,不包括源</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>setNumberOfInputs</td>
+<td>JobVertex的输入数</td>
+</tr>
+<tr>
+<td>*setInPhysicalEdges</td>
+<td>以这个节点为target的断StreamEdge集合</td>
+</tr>
+</tbody>
+</table>
+<p>connect方法核心：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">jobEdge = downStreamVertex.connectNewDataSetAsInput(</span><br><span class="line">					headVertex,</span><br><span class="line">					DistributionPattern.ALL_TO_ALL,</span><br><span class="line">					ResultPartitionType.PIPELINED_BOUNDED);</span><br></pre></td></tr></table></figure></p>
+<p>调用下游节点JobVertex.connectNewDataSetAsInput<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public JobEdge connectNewDataSetAsInput(</span><br><span class="line">		JobVertex input,</span><br><span class="line">		DistributionPattern distPattern,</span><br><span class="line">		ResultPartitionType partitionType) &#123;</span><br><span class="line"></span><br><span class="line">	IntermediateDataSet dataSet = input.createAndAddResultDataSet(partitionType);</span><br><span class="line"></span><br><span class="line">	JobEdge edge = new JobEdge(dataSet, this, distPattern);</span><br><span class="line">	this.inputs.add(edge);</span><br><span class="line">	dataSet.addConsumer(edge);</span><br><span class="line">	return edge;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>注意，这里是下游主动去连上游，而不同的下游在连上游时虽然上游的输出有可能只有一个，但是还是会为每个下游创建一个IDS，每个IDS的consumer只有一个。<br>调用上游的createAndAddResultDataSet创建了一个IDS。<br>然后创建JobEdge连接IDS和下游JobVertex。<br>最后给IDS增加consumer，给下游JobVertex增加input。</p>
+<p>IDS上面有一个属性是partitionType（值为ResultPartitionType.PIPELINED_BOUNDED）；JobEdge上有一个属性是DistributionPattern（值为DistributionPattern.ALL_TO_ALL）</p>
+<p><img src="media/15465045794719/15468309151085.jpg" alt=""></p>
+<h4 id="setPhysicalEdges"><a href="#setPhysicalEdges" class="headerlink" title="setPhysicalEdges"></a>setPhysicalEdges</h4><p>为对应节点（JobVertex）的StreamConfig设置setInPhysicalEdges， List[StreamEdge]</p>
+<h4 id="setSlotSharingAndCoLocation"><a href="#setSlotSharingAndCoLocation" class="headerlink" title="setSlotSharingAndCoLocation"></a>setSlotSharingAndCoLocation</h4><p>为JobVertex设置setSlotSharingGroup</p>
+<h4 id="设置Checkpoint"><a href="#设置Checkpoint" class="headerlink" title="设置Checkpoint"></a>设置Checkpoint</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">JobCheckpointingSettings settings = new JobCheckpointingSettings(</span><br><span class="line">			triggerVertices,</span><br><span class="line">			ackVertices,</span><br><span class="line">			commitVertices,</span><br><span class="line">			new CheckpointCoordinatorConfiguration(</span><br><span class="line">				interval,</span><br><span class="line">				cfg.getCheckpointTimeout(),</span><br><span class="line">				cfg.getMinPauseBetweenCheckpoints(),</span><br><span class="line">				cfg.getMaxConcurrentCheckpoints(),</span><br><span class="line">				retentionAfterTermination,</span><br><span class="line">				isExactlyOnce),</span><br><span class="line">			serializedStateBackend,</span><br><span class="line">			serializedHooks);</span><br></pre></td></tr></table></figure>
+<p>为JobGraph设置JobCheckpointingSettings</p>
+<p>总之，JobGraph在StreamGraph的基础上，形成了这样的数据结构：<br><img src="media/15465045794719/15510811705376.jpg" alt="-w1000"><br>每个StreamNode对应StreamConfig。<br>每个JobVertex的StreamConfig有属性指向链上的StreamConfig集合。<br>每个JobVertex的configuration中有属性指向出断。<br>每个JobVertex的configuration中有属性指向入断。<br>每个StreamConfig有属性指向对应StreamNode的出边。</p>
 
       
     </div>
@@ -649,8 +816,8 @@ if (currentNodeId.equals(startNodeId)) {
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/02/16/flink-component-communication/" rel="next" title="Flink模块间通信图">
-                <i class="fa fa-chevron-left"></i> Flink模块间通信图
+              <a href="/2019/02/16/flink-component-communication/" rel="next" title="Flink源码阅读笔记--集群启动篇">
+                <i class="fa fa-chevron-left"></i> Flink源码阅读笔记--集群启动篇
               </a>
             
           </div>
@@ -771,7 +938,7 @@ if (currentNodeId.equals(startNodeId)) {
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Flink源码阅读笔记"><span class="nav-number">1.</span> <span class="nav-text">Flink源码阅读笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#WordCount程序总览"><span class="nav-number">1.1.</span> <span class="nav-text">WordCount程序总览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构建ExecutionEnvironment"><span class="nav-number">1.2.</span> <span class="nav-text">构建ExecutionEnvironment</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加Source"><span class="nav-number">1.3.</span> <span class="nav-text">添加Source</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#flatMap算子"><span class="nav-number">1.4.</span> <span class="nav-text">flatMap算子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#map算子"><span class="nav-number">1.5.</span> <span class="nav-text">map算子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#keyBy算子"><span class="nav-number">1.6.</span> <span class="nav-text">keyBy算子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sum算子"><span class="nav-number">1.7.</span> <span class="nav-text">sum算子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#print算子"><span class="nav-number">1.8.</span> <span class="nav-text">print算子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#StreamExecutionEnvironment-execute"><span class="nav-number">1.9.</span> <span class="nav-text">StreamExecutionEnvironment.execute</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#StreamExecutionEnvironment-getStreamGraph"><span class="nav-number">1.9.1.</span> <span class="nav-text">StreamExecutionEnvironment.getStreamGraph</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Flink源码阅读笔记–DAG篇"><span class="nav-number">1.</span> <span class="nav-text">Flink源码阅读笔记–DAG篇</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#WordCount程序总览"><span class="nav-number">1.1.</span> <span class="nav-text">WordCount程序总览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构建ExecutionEnvironment"><span class="nav-number">1.2.</span> <span class="nav-text">构建ExecutionEnvironment</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加Source"><span class="nav-number">1.3.</span> <span class="nav-text">添加Source</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#flatMap算子"><span class="nav-number">1.4.</span> <span class="nav-text">flatMap算子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#map算子"><span class="nav-number">1.5.</span> <span class="nav-text">map算子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#keyBy算子"><span class="nav-number">1.6.</span> <span class="nav-text">keyBy算子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sum算子"><span class="nav-number">1.7.</span> <span class="nav-text">sum算子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#print算子"><span class="nav-number">1.8.</span> <span class="nav-text">print算子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#StreamExecutionEnvironment-execute"><span class="nav-number">1.9.</span> <span class="nav-text">StreamExecutionEnvironment.execute</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#StreamExecutionEnvironment-getStreamGraph"><span class="nav-number">1.9.1.</span> <span class="nav-text">StreamExecutionEnvironment.getStreamGraph</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#由StreamGraph生成JobGraph"><span class="nav-number">1.9.2.</span> <span class="nav-text">由StreamGraph生成JobGraph</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#调用setChaining"><span class="nav-number">1.9.2.1.</span> <span class="nav-text">调用setChaining</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#setPhysicalEdges"><span class="nav-number">1.9.2.2.</span> <span class="nav-text">setPhysicalEdges</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#setSlotSharingAndCoLocation"><span class="nav-number">1.9.2.3.</span> <span class="nav-text">setSlotSharingAndCoLocation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#设置Checkpoint"><span class="nav-number">1.9.2.4.</span> <span class="nav-text">设置Checkpoint</span></a></li></ol></li></ol></li></ol></li></ol></div>
             
 
           </div>
