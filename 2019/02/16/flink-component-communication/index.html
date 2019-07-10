@@ -86,12 +86,12 @@
 <meta property="og:site_name" content="徐涛的个人主页">
 <meta property="og:description" content="Flink源码阅读笔记–集群启动篇构建MiniCluster上一篇中分析到LocalStreamEnvironment的execute方法中生成JobGraph的过程。本篇接着分析剩下部分。 MiniCluster.start123456789101112131415161718192021222324252627282930313233343536373839404142434445464748">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://yoursite.com/2019/02/16/flink-component-communication/media/15468250974689/15620569452240.jpg">
-<meta property="og:updated_time" content="2019-07-10T21:46:45.209Z">
+<meta property="og:image" content="http://yoursite.com/2019/02/16/flink-component-communication/15620569452240.jpg">
+<meta property="og:updated_time" content="2019-07-10T22:00:03.638Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Flink源码阅读笔记--集群启动篇">
 <meta name="twitter:description" content="Flink源码阅读笔记–集群启动篇构建MiniCluster上一篇中分析到LocalStreamEnvironment的execute方法中生成JobGraph的过程。本篇接着分析剩下部分。 MiniCluster.start123456789101112131415161718192021222324252627282930313233343536373839404142434445464748">
-<meta name="twitter:image" content="http://yoursite.com/2019/02/16/flink-component-communication/media/15468250974689/15620569452240.jpg">
+<meta name="twitter:image" content="http://yoursite.com/2019/02/16/flink-component-communication/15620569452240.jpg">
 
 
 
@@ -367,7 +367,7 @@
 <li>将LogicalSlot中的TaskManagerLocation信息设置到Execution中</li>
 </ol>
 <h4 id="Execution-deploy"><a href="#Execution-deploy" class="headerlink" title="Execution.deploy"></a>Execution.deploy</h4><ol>
-<li><p>调用ExecutionVertex.createDeploymentDescriptor<br>每个ExecutionVertex可能会有多个IRP；也会有多个inputs。<br>（注意，现在的模式是一个consumer对应一个IRP）每个IRP生成一个ResultPartitionDeploymentDescriptor。<br>对于每一个上游生成一个InputGateDeploymentDescriptor，对于每一个上游里面的每个Partition生成一个InputChannelDeploymentDescriptor<br><img src="media/15468250974689/15620569452240.jpg" alt=""></p>
+<li><p>调用ExecutionVertex.createDeploymentDescriptor<br>每个ExecutionVertex可能会有多个IRP；也会有多个inputs。<br>（注意，现在的模式是一个consumer对应一个IRP）每个IRP生成一个ResultPartitionDeploymentDescriptor。<br>对于每一个上游生成一个InputGateDeploymentDescriptor，对于每一个上游里面的每个Partition生成一个InputChannelDeploymentDescriptor<br><img src="15620569452240.jpg" alt=""></p>
 </li>
 <li><p>TaskExecutor.submitTask</p>
 </li>
