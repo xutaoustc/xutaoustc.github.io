@@ -300,9 +300,9 @@
       
         
           
-            <h1 id="Flink源码阅读笔记–资源申请篇"><a href="#Flink源码阅读笔记–资源申请篇" class="headerlink" title="Flink源码阅读笔记–资源申请篇"></a>Flink源码阅读笔记–资源申请篇</h1><h2 id="SlotPool-allocateSlot"><a href="#SlotPool-allocateSlot" class="headerlink" title="SlotPool.allocateSlot"></a>SlotPool.allocateSlot</h2><p><img src="15623083314667.jpg" alt="-w559"><br>pendingRequests：用于在向RM申请Slot后没有确认前的临时注册<br>allocatedSlots：在收到JM发来的SlotOffer后确认正式成为Slot<br>availableSlots：和allocatedSlots差不多，是allocatedSlots在异常情况下的备份</p>
-<h3 id="创建SlotSharingManager"><a href="#创建SlotSharingManager" class="headerlink" title="创建SlotSharingManager"></a>创建SlotSharingManager</h3><p>每个SlotSharingGroup创建SlotSharingManager（大多数仅一个SlotSharingGroup）<br><img src="15622997751725.jpg" alt="-w496"><br>slotOwner指向SlotPool.ProviderAndOwner<br>allocatedSlotActions指向SlotPool<br>allTaskSlots(存储RootSlot和SingleTaskSlot)<br>unresolvedRootSlots（在申请Slot后确认前）<br>resolvedRootSlots（在申请Slot后确认后，根据TM划分）</p>
-<h3 id="SlotPool-allocateMultiTaskSlot"><a href="#SlotPool-allocateMultiTaskSlot" class="headerlink" title="SlotPool.allocateMultiTaskSlot"></a>SlotPool.allocateMultiTaskSlot</h3><h4 id="SlotSharingManager-getResolvedRootSlot"><a href="#SlotSharingManager-getResolvedRootSlot" class="headerlink" title="SlotSharingManager.getResolvedRootSlot"></a>SlotSharingManager.getResolvedRootSlot</h4><p>尝试从已经申请的Slot中选一个重用。逻辑：先选所有slot未曾挂载过同一个JobVertex实例的，列为S；<br>如果没有PreferredLocation，取S中第一个；<br>如果有PreferredLocation，对S中的每一个根据命中PreferredLocation的情况打分，取得分最高的。 </p>
+            <h1 id="Flink源码阅读笔记–资源申请篇"><a href="#Flink源码阅读笔记–资源申请篇" class="headerlink" title="Flink源码阅读笔记–资源申请篇"></a>Flink源码阅读笔记–资源申请篇</h1><h2 id="入口SlotPool-allocateSlot"><a href="#入口SlotPool-allocateSlot" class="headerlink" title="入口SlotPool.allocateSlot"></a>入口SlotPool.allocateSlot</h2><p><img src="15623083314667.jpg" alt="-w559"><br>pendingRequests：用于在向RM申请Slot后没有确认前的临时注册<br>allocatedSlots：在收到JM发来的SlotOffer后确认正式成为Slot<br>availableSlots：和allocatedSlots差不多，是allocatedSlots在异常情况下的备份</p>
+<h3 id="创建SlotSharingManager"><a href="#创建SlotSharingManager" class="headerlink" title="创建SlotSharingManager"></a>创建SlotSharingManager</h3><p>每个SlotSharingGroup创建SlotSharingManager（大多数仅一个SlotSharingGroup）<br><img src="15622997751725.jpg" alt="-w496"><br>slotOwner指向SlotPool.ProviderAndOwner<br>allocatedSlotActions指向SlotPool<br>allTaskSlots(存储MultiTaskSlot和SingleTaskSlot)<br>unresolvedRootSlots：在申请Slot后并且在确认前的临时存储<br>resolvedRootSlots：在申请Slot并且在确认后，根据TM划分为形如TM1-(MultiTaskSlot,MultiTaskSlot), TM2-(MultiTaskSlot,MultiTaskSlot)</p>
+<h3 id="SlotPool-allocateMultiTaskSlot"><a href="#SlotPool-allocateMultiTaskSlot" class="headerlink" title="SlotPool.allocateMultiTaskSlot"></a>SlotPool.allocateMultiTaskSlot</h3><h4 id="SlotSharingManager-getResolvedRootSlot"><a href="#SlotSharingManager-getResolvedRootSlot" class="headerlink" title="SlotSharingManager.getResolvedRootSlot"></a>SlotSharingManager.getResolvedRootSlot</h4><p>尝试从resolvedRootSlots的若干个MultiTaskSlot中选一个重用。逻辑：先选所有MultiTaskSlot未曾挂载过同一个JobVertex实例的，列为集合S；<br>如果没有PreferredLocation，取S中第一个；<br>如果有PreferredLocation，对S中的每一个根据命中PreferredLocation的情况打分，取得分最高的。 </p>
 <h4 id="SlotPool-requestNewAllocatedSlot-amp-SlotSharingManager-createRootSlot"><a href="#SlotPool-requestNewAllocatedSlot-amp-SlotSharingManager-createRootSlot" class="headerlink" title="SlotPool.requestNewAllocatedSlot &amp; SlotSharingManager.createRootSlot"></a>SlotPool.requestNewAllocatedSlot &amp; SlotSharingManager.createRootSlot</h4><ol>
 <li>创建PendingRequest(包含一个future，在complete时会触发多个操作；在RM-TM-JM-SP走一圈后complete)</li>
 <li>ResourceManager.requestSlot</li>
@@ -311,7 +311,7 @@
 </ol>
 <h3 id="MultiTaskSlot-allocateSingleTaskSlot"><a href="#MultiTaskSlot-allocateSingleTaskSlot" class="headerlink" title="MultiTaskSlot.allocateSingleTaskSlot"></a>MultiTaskSlot.allocateSingleTaskSlot</h3><p>创建SingleTaskSlot加入到allTaskSlots</p>
 <hr>
-<p>总之，整体思路是先查找未曾挂载过同一JobVertex下其他实例的、本地的MultiTaskSlot。如果有则使用，如果没有就去申请一个。然后在MultiTaskSlot上挂上SingleTaskSlot</p>
+<p>总之，整体思路是先查找未曾挂载过同一JobVertex下其他实例、本地的MultiTaskSlot。如果有则使用，如果没有就去申请一个。然后在MultiTaskSlot上挂上SingleTaskSlot</p>
 <p>在没有启用CoLocationConstraint时</p>
 <ul>
 <li>一个物理Slot对应的就是一个MultiTaskSlot</li>
