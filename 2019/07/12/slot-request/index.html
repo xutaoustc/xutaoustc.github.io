@@ -81,7 +81,7 @@
 
 <meta name="description" content="Flink源码阅读笔记–资源申请篇入口SlotPool.allocateSlotpendingRequests：用于在向RM申请Slot后没有确认前的临时注册allocatedSlots：在收到JM发来的SlotOffer后确认正式成为SlotavailableSlots：和allocatedSlots差不多，是allocatedSlots在异常情况下的备份 创建SlotSharingManage">
 <meta property="og:type" content="article">
-<meta property="og:title" content="slot_request">
+<meta property="og:title" content="Flink Slot申请">
 <meta property="og:url" content="http://yoursite.com/2019/07/12/slot-request/index.html">
 <meta property="og:site_name" content="徐涛的个人主页">
 <meta property="og:description" content="Flink源码阅读笔记–资源申请篇入口SlotPool.allocateSlotpendingRequests：用于在向RM申请Slot后没有确认前的临时注册allocatedSlots：在收到JM发来的SlotOffer后确认正式成为SlotavailableSlots：和allocatedSlots差不多，是allocatedSlots在异常情况下的备份 创建SlotSharingManage">
@@ -89,9 +89,9 @@
 <meta property="og:image" content="http://yoursite.com/2019/07/12/slot-request/15623083314667.jpg">
 <meta property="og:image" content="http://yoursite.com/2019/07/12/slot-request/15622997751725.jpg">
 <meta property="og:image" content="http://yoursite.com/2019/07/12/slot-request/Slot_Request.png">
-<meta property="og:updated_time" content="2019-07-12T08:10:23.444Z">
+<meta property="og:updated_time" content="2019-07-12T09:09:06.953Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="slot_request">
+<meta name="twitter:title" content="Flink Slot申请">
 <meta name="twitter:description" content="Flink源码阅读笔记–资源申请篇入口SlotPool.allocateSlotpendingRequests：用于在向RM申请Slot后没有确认前的临时注册allocatedSlots：在收到JM发来的SlotOffer后确认正式成为SlotavailableSlots：和allocatedSlots差不多，是allocatedSlots在异常情况下的备份 创建SlotSharingManage">
 <meta name="twitter:image" content="http://yoursite.com/2019/07/12/slot-request/15623083314667.jpg">
 
@@ -129,7 +129,7 @@
 
 
 
-  <title>slot_request | 徐涛的个人主页</title>
+  <title>Flink Slot申请 | 徐涛的个人主页</title>
   
 
 
@@ -253,7 +253,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">slot_request</h1>
+          <h1 class="post-title" itemprop="name headline">Flink Slot申请</h1>
         
 
         <div class="post-meta">
@@ -306,7 +306,8 @@
         <h1 id="Flink源码阅读笔记–资源申请篇"><a href="#Flink源码阅读笔记–资源申请篇" class="headerlink" title="Flink源码阅读笔记–资源申请篇"></a>Flink源码阅读笔记–资源申请篇</h1><h2 id="入口SlotPool-allocateSlot"><a href="#入口SlotPool-allocateSlot" class="headerlink" title="入口SlotPool.allocateSlot"></a>入口SlotPool.allocateSlot</h2><p><img src="15623083314667.jpg" alt="-w559"><br>pendingRequests：用于在向RM申请Slot后没有确认前的临时注册<br>allocatedSlots：在收到JM发来的SlotOffer后确认正式成为Slot<br>availableSlots：和allocatedSlots差不多，是allocatedSlots在异常情况下的备份</p>
 <h3 id="创建SlotSharingManager"><a href="#创建SlotSharingManager" class="headerlink" title="创建SlotSharingManager"></a>创建SlotSharingManager</h3><p>每个SlotSharingGroup创建SlotSharingManager（大多数仅一个SlotSharingGroup）<br><img src="15622997751725.jpg" alt="-w496"><br>slotOwner指向SlotPool.ProviderAndOwner<br>allocatedSlotActions指向SlotPool<br>allTaskSlots(存储MultiTaskSlot和SingleTaskSlot)<br>unresolvedRootSlots：在申请Slot后并且在确认前的临时存储<br>resolvedRootSlots：在申请Slot并且在确认后，根据TM划分为形如TM1-(MultiTaskSlot,MultiTaskSlot), TM2-(MultiTaskSlot,MultiTaskSlot)</p>
 <h3 id="SlotPool-allocateMultiTaskSlot"><a href="#SlotPool-allocateMultiTaskSlot" class="headerlink" title="SlotPool.allocateMultiTaskSlot"></a>SlotPool.allocateMultiTaskSlot</h3><h4 id="SlotSharingManager-getResolvedRootSlot"><a href="#SlotSharingManager-getResolvedRootSlot" class="headerlink" title="SlotSharingManager.getResolvedRootSlot"></a>SlotSharingManager.getResolvedRootSlot</h4><p>尝试从resolvedRootSlots的若干个MultiTaskSlot中选一个重用。逻辑：先选所有MultiTaskSlot未曾挂载过同一个JobVertex实例的，列为集合S；<br>如果没有PreferredLocation，取S中第一个；<br>如果有PreferredLocation，对S中的每一个根据命中PreferredLocation的情况打分，取得分最高的。 </p>
-<h4 id="SlotPool-requestNewAllocatedSlot-amp-SlotSharingManager-createRootSlot"><a href="#SlotPool-requestNewAllocatedSlot-amp-SlotSharingManager-createRootSlot" class="headerlink" title="SlotPool.requestNewAllocatedSlot &amp; SlotSharingManager.createRootSlot"></a>SlotPool.requestNewAllocatedSlot &amp; SlotSharingManager.createRootSlot</h4><ol>
+<h4 id="SlotPool-requestNewAllocatedSlot-amp-SlotSharingManager-createRootSlot"><a href="#SlotPool-requestNewAllocatedSlot-amp-SlotSharingManager-createRootSlot" class="headerlink" title="SlotPool.requestNewAllocatedSlot &amp; SlotSharingManager.createRootSlot"></a>SlotPool.requestNewAllocatedSlot &amp; SlotSharingManager.createRootSlot</h4><p>如果找不到可重用的：</p>
+<ol>
 <li>创建PendingRequest(包含一个future，在complete时会触发多个操作；在RM-TM-JM-SP走一圈后complete)</li>
 <li>ResourceManager.requestSlot</li>
 <li>创建MultiTaskSlot增加到allTaskSlots；</li>
