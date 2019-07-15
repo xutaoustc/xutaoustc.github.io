@@ -301,11 +301,9 @@
         
           
             <h1 id="Flink源码阅读笔记–Task执行篇"><a href="#Flink源码阅读笔记–Task执行篇" class="headerlink" title="Flink源码阅读笔记–Task执行篇"></a>Flink源码阅读笔记–Task执行篇</h1><h2 id="TaskExecutor-submitTask"><a href="#TaskExecutor-submitTask" class="headerlink" title="TaskExecutor.submitTask"></a>TaskExecutor.submitTask</h2><ol>
-<li>新建Task<br><img src="media/15621262012742/Task.jpg" alt="Task"><br>重点属性：<br>jobId, vertexId, executionId, allocationId<br>jobConfiguration, serializedExecutionConfig,  taskConfiguration, taskManagerConfig<br>nameOfInvokableClass<br>memoryManager, ioManager, network, taskStateManager<br>TaskManagerActions, CheckpointResponder, LibraryCacheManager, PartitionProducerStateChecker<br>inputGates, producedPartitions</li>
+<li>新建Task<br><img src="Task.jpg" alt="Task"><br>重点属性：<br>jobId, vertexId, executionId, allocationId<br>jobConfiguration, serializedExecutionConfig,  taskConfiguration, taskManagerConfig<br>nameOfInvokableClass<br>memoryManager, ioManager, network, taskStateManager<br>TaskManagerActions, CheckpointResponder, LibraryCacheManager, PartitionProducerStateChecker<br>每个ResultPartitionDeploymentDescriptor生成一个ResultPartition，最终形成producedPartitions(ResultPartition类包含Task、ResultPartitionManager、ResultPartitionConsumableNotifier、PipelinedSubpartition数组)；<br>每个InputGateDeploymentDescriptor生成一个SingleInputGate，最终形成inputGates（SingleInputGate类包含Task，InputChannel数组(在本地调试的时候是LocalInputChannel，包含ResultPartitionManager和TaskEventDispatcher)）</li>
 </ol>
-<ol start="2">
-<li></li>
-</ol>
+<p>2. </p>
 
           
         
