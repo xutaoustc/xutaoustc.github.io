@@ -229,6 +229,131 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/14/task-execution/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="徐涛">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="徐涛的个人主页">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/07/14/task-execution/" itemprop="url">Task执行过程</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-07-14T16:01:02+08:00">
+                2019-07-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Flink源码阅读笔记–Task执行篇"><a href="#Flink源码阅读笔记–Task执行篇" class="headerlink" title="Flink源码阅读笔记–Task执行篇"></a>Flink源码阅读笔记–Task执行篇</h1><h2 id="TaskExecutor-submitTask"><a href="#TaskExecutor-submitTask" class="headerlink" title="TaskExecutor.submitTask"></a>TaskExecutor.submitTask</h2><ol>
+<li>新建Task<br><img src="media/15621262012742/Task.jpg" alt="Task"><br>重点属性：<br>jobId, vertexId, executionId, allocationId<br>jobConfiguration, serializedExecutionConfig,  taskConfiguration, taskManagerConfig<br>nameOfInvokableClass<br>memoryManager, ioManager, network, taskStateManager<br>TaskManagerActions, CheckpointResponder, LibraryCacheManager, PartitionProducerStateChecker<br>inputGates, producedPartitions</li>
+</ol>
+<ol start="2">
+<li></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/12/slot-request/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1235,7 +1360,7 @@
 <li>将LogicalSlot中的TaskManagerLocation信息设置到Execution中</li>
 </ol>
 <h4 id="Execution-deploy"><a href="#Execution-deploy" class="headerlink" title="Execution.deploy"></a>Execution.deploy</h4><ol>
-<li><p>调用ExecutionVertex.createDeploymentDescriptor<br>每个ExecutionVertex可能会有多个IRP；也会有多个inputs。<br>（注意，现在的模式是一个consumer对应一个IRP）每个IRP生成一个ResultPartitionDeploymentDescriptor。<br>对于每一个上游生成一个InputGateDeploymentDescriptor，对于每一个上游里面的每个Partition生成一个InputChannelDeploymentDescriptor<br><img src="15620569452240.jpg" alt=""></p>
+<li><p>调用ExecutionVertex.createDeploymentDescriptor<br>注意下游连接上游时:<br>如果上游被多次连接，那么上游就会对应多个IRP（现在的模式IRP并没有重用）。<br>如果下游连接了多个上游时，那么下游就会对应多个inputs。<br>每个IRP生成一个ResultPartitionDeploymentDescriptor（numberOfSubpartitions指的是这个IRP下游有几个consumer）。<br>对于每一个input生成一个InputGateDeploymentDescriptor，对于每一个上游里面的每个Partition生成一个InputChannelDeploymentDescriptor<br><img src="15620569452240.jpg" alt=""></p>
 </li>
 <li><p>TaskExecutor.submitTask</p>
 </li>
@@ -1321,7 +1446,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
