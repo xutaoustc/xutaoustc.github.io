@@ -91,7 +91,7 @@
 <meta property="og:image" content="http://yoursite.com/2019/03/09/flink-action-until-jobGraph/15466760243164.jpg">
 <meta property="og:image" content="http://yoursite.com/2019/03/09/flink-action-until-jobGraph/15468309151085.jpg">
 <meta property="og:image" content="http://yoursite.com/2019/03/09/flink-action-until-jobGraph/15510811705376.jpg">
-<meta property="og:updated_time" content="2019-07-15T08:37:17.063Z">
+<meta property="og:updated_time" content="2019-07-17T13:50:44.893Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="1. Flink源码阅读笔记--DAG篇">
 <meta name="twitter:description" content="Flink源码阅读笔记–DAG篇WordCount程序总览12345678910111213val env = StreamExecutionEnvironment.getExecutionEnvironmentval text = env.addSource(new RandomLocalJsonSourceFunction(1,1000))val words = text.flatMap &amp;#">
@@ -722,7 +722,7 @@
 </tr>
 <tr>
 <td>setStateKeySerializer</td>
-<td>StreamNode.stateKeySerializer</td>
+<td>StreamNode.stateKeySerializer(这个属性决定了一个算子有没有keyedState)</td>
 </tr>
 <tr>
 <td>setOperatorID</td>
