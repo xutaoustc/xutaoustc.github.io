@@ -79,21 +79,21 @@
 
 
 
-<meta name="description" content="#TaskExecutor.submitTask  新建Task重点属性：  jobId, vertexId, executionId, allocationId jobConfiguration, serializedExecutionConfig,  taskConfiguration, taskManagerConfig nameOfInvokableClass memoryManager,">
+<meta name="description" content="TaskExecutor.submitTask新建Task重点属性：  jobId, vertexId, executionId, allocationId jobConfiguration, serializedExecutionConfig,  taskConfiguration, taskManagerConfig nameOfInvokableClass memoryManager, io">
 <meta property="og:type" content="article">
 <meta property="og:title" content="4. Task执行过程">
 <meta property="og:url" content="http://yoursite.com/2019/07/14/task-execution/index.html">
 <meta property="og:site_name" content="徐涛的个人主页">
-<meta property="og:description" content="#TaskExecutor.submitTask  新建Task重点属性：  jobId, vertexId, executionId, allocationId jobConfiguration, serializedExecutionConfig,  taskConfiguration, taskManagerConfig nameOfInvokableClass memoryManager,">
+<meta property="og:description" content="TaskExecutor.submitTask新建Task重点属性：  jobId, vertexId, executionId, allocationId jobConfiguration, serializedExecutionConfig,  taskConfiguration, taskManagerConfig nameOfInvokableClass memoryManager, io">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://yoursite.com/2019/07/14/task-execution/Task.jpg">
 <meta property="og:image" content="http://yoursite.com/2019/07/14/task-execution/OperatorChainingNew.png">
 <meta property="og:image" content="http://yoursite.com/2019/07/14/task-execution/OperatorChain_draw.jpg">
 <meta property="og:image" content="http://yoursite.com/2019/07/14/task-execution/15633528714957.jpg">
-<meta property="og:updated_time" content="2019-07-18T10:43:39.325Z">
+<meta property="og:updated_time" content="2019-07-18T10:45:21.299Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="4. Task执行过程">
-<meta name="twitter:description" content="#TaskExecutor.submitTask  新建Task重点属性：  jobId, vertexId, executionId, allocationId jobConfiguration, serializedExecutionConfig,  taskConfiguration, taskManagerConfig nameOfInvokableClass memoryManager,">
+<meta name="twitter:description" content="TaskExecutor.submitTask新建Task重点属性：  jobId, vertexId, executionId, allocationId jobConfiguration, serializedExecutionConfig,  taskConfiguration, taskManagerConfig nameOfInvokableClass memoryManager, io">
 <meta name="twitter:image" content="http://yoursite.com/2019/07/14/task-execution/Task.jpg">
 
 
@@ -304,8 +304,7 @@
       
 
       
-        <p>#TaskExecutor.submitTask </p>
-<h2 id="新建Task"><a href="#新建Task" class="headerlink" title="新建Task"></a>新建Task</h2><p><img src="Task.jpg" alt="Task"><br>重点属性：</p>
+        <h1 id="TaskExecutor-submitTask"><a href="#TaskExecutor-submitTask" class="headerlink" title="TaskExecutor.submitTask"></a>TaskExecutor.submitTask</h1><h2 id="新建Task"><a href="#新建Task" class="headerlink" title="新建Task"></a>新建Task</h2><p><img src="Task.jpg" alt="Task"><br>重点属性：</p>
 <ul>
 <li>jobId, vertexId, executionId, allocationId</li>
 <li>jobConfiguration, serializedExecutionConfig,  taskConfiguration, taskManagerConfig</li>
@@ -559,7 +558,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#新建Task"><span class="nav-number">1.</span> <span class="nav-text">新建Task</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#起Task线程"><span class="nav-number">2.</span> <span class="nav-text">起Task线程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#NetworkEnvironment-registerTask"><span class="nav-number">2.1.</span> <span class="nav-text">NetworkEnvironment.registerTask</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#new-RuntimeEnvironment"><span class="nav-number">2.2.</span> <span class="nav-text">new RuntimeEnvironment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#loadAndInstantiateInvokable"><span class="nav-number">2.3.</span> <span class="nav-text">loadAndInstantiateInvokable</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OneInputStreamTask或者SourceStreamTask-invoke"><span class="nav-number">2.4.</span> <span class="nav-text">OneInputStreamTask或者SourceStreamTask.invoke</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#创建StateBackend并创建对应的CheckpointStorage"><span class="nav-number">2.4.1.</span> <span class="nav-text">创建StateBackend并创建对应的CheckpointStorage</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建OperatorChain"><span class="nav-number">2.4.2.</span> <span class="nav-text">创建OperatorChain</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#OneInputStreamTask或者SourceStreamTask-init"><span class="nav-number">2.4.3.</span> <span class="nav-text">OneInputStreamTask或者SourceStreamTask.init</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#initializeState"><span class="nav-number">2.4.4.</span> <span class="nav-text">initializeState</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#openAllOperators"><span class="nav-number">2.4.5.</span> <span class="nav-text">openAllOperators</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#run"><span class="nav-number">2.4.6.</span> <span class="nav-text">run</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TaskExecutor-submitTask"><span class="nav-number">1.</span> <span class="nav-text">TaskExecutor.submitTask</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#新建Task"><span class="nav-number">1.1.</span> <span class="nav-text">新建Task</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#起Task线程"><span class="nav-number">1.2.</span> <span class="nav-text">起Task线程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#NetworkEnvironment-registerTask"><span class="nav-number">1.2.1.</span> <span class="nav-text">NetworkEnvironment.registerTask</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#new-RuntimeEnvironment"><span class="nav-number">1.2.2.</span> <span class="nav-text">new RuntimeEnvironment</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#loadAndInstantiateInvokable"><span class="nav-number">1.2.3.</span> <span class="nav-text">loadAndInstantiateInvokable</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OneInputStreamTask或者SourceStreamTask-invoke"><span class="nav-number">1.2.4.</span> <span class="nav-text">OneInputStreamTask或者SourceStreamTask.invoke</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#创建StateBackend并创建对应的CheckpointStorage"><span class="nav-number">1.2.4.1.</span> <span class="nav-text">创建StateBackend并创建对应的CheckpointStorage</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建OperatorChain"><span class="nav-number">1.2.4.2.</span> <span class="nav-text">创建OperatorChain</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#OneInputStreamTask或者SourceStreamTask-init"><span class="nav-number">1.2.4.3.</span> <span class="nav-text">OneInputStreamTask或者SourceStreamTask.init</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#initializeState"><span class="nav-number">1.2.4.4.</span> <span class="nav-text">initializeState</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#openAllOperators"><span class="nav-number">1.2.4.5.</span> <span class="nav-text">openAllOperators</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#run"><span class="nav-number">1.2.4.6.</span> <span class="nav-text">run</span></a></li></ol></li></ol></li></ol></li></ol></div>
             
 
           </div>
