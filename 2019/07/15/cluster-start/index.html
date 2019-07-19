@@ -87,7 +87,7 @@
 <meta property="og:description" content="Flink源码阅读笔记–集群启动篇构建MiniCluster上一篇中分析到LocalStreamEnvironment的execute方法中生成JobGraph的过程。本篇接着分析剩下部分。 MiniCluster.start123456789101112131415161718192021222324252627282930313233343536373839404142434445464748">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://yoursite.com/2019/07/15/cluster-start/15620569452240.jpg">
-<meta property="og:updated_time" content="2019-07-19T07:44:59.930Z">
+<meta property="og:updated_time" content="2019-07-19T08:48:14.999Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="2. 集群启动篇">
 <meta name="twitter:description" content="Flink源码阅读笔记–集群启动篇构建MiniCluster上一篇中分析到LocalStreamEnvironment的execute方法中生成JobGraph的过程。本篇接着分析剩下部分。 MiniCluster.start123456789101112131415161718192021222324252627282930313233343536373839404142434445464748">
@@ -370,12 +370,12 @@
 <li>将LogicalSlot中的TaskManagerLocation信息设置到Execution中</li>
 </ol>
 <h4 id="Execution-deploy"><a href="#Execution-deploy" class="headerlink" title="Execution.deploy"></a>Execution.deploy</h4><ol>
-<li><p>调用ExecutionVertex.createDeploymentDescriptor，这可以理解为ExecutionGraph的下一层，ExecutionGraph是全局性的，而这里是对每一个实际可运行的实例的一个局部描写。<br>从全局看，上游的每个实例都会往下游的每个实例发；下游的每个实例都会从上游的每个实例收（全局）。<br>而作为一个局部描述，每个局部实例需要做好自己的事情，例如单个实例在输出端需要知道它会往下游的几个实例发，在输入端需要知道它从哪个输出端拿数据以及它从每个输出端的第几个输出拿数据。</p>
+<li><p>调用ExecutionVertex.createDeploymentDescriptor，可以理解为ExecutionGraph的下一层。ExecutionGraph是全局性的；而这里是对单实例的局部描写，每个单实例需要做好自己的事情，管理好自己的输入和输出。<br>从全局看，上游的每个实例都会往下游的每个实例发；下游的每个实例都会从上游的每个实例收<br>从局部看，单个实例会往下游的每个实例发；单个实例也会从上游的每个实例收</p>
 <ul>
 <li>注意下游连接上游时，上游增加一个IRP，下游增加一个input</li>
-<li>实际是拉模式，下游从上游拉取数据</li>
 <li>每个IRP生成一个ResultPartitionDeploymentDescriptor</li>
-<li>对于每一个input生成一个InputGateDeploymentDescriptor，对于每一个上游里面的每个Partition生成一个InputChannelDeploymentDescriptor<br><img src="15620569452240.jpg" alt=""></li>
+<li>对于每一个input生成一个InputGateDeploymentDescriptor，对于每一个上游里面的每个Partition生成一个InputChannelDeploymentDescriptor</li>
+<li>实际是拉模式，下游从上游拉取数据<br><img src="15620569452240.jpg" alt=""></li>
 </ul>
 </li>
 <li><p>TaskExecutor.submitTask</p>
