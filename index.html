@@ -248,7 +248,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/07/15/cluster-start/" itemprop="url">2. 集群启动篇</a></h1>
+                <a class="post-title-link" href="/2019/07/15/cluster-start/" itemprop="url">Untitled</a></h1>
         
 
         <div class="post-meta">
@@ -369,12 +369,11 @@
 <li>将LogicalSlot中的TaskManagerLocation信息设置到Execution中</li>
 </ol>
 <h4 id="Execution-deploy"><a href="#Execution-deploy" class="headerlink" title="Execution.deploy"></a>Execution.deploy</h4><ol>
-<li><p>调用ExecutionVertex.createDeploymentDescriptor，可以理解为ExecutionGraph的下一层。ExecutionGraph是全局性的；而这里是对单实例的局部描写，每个单实例需要做好自己的事情，管理好自己的输入和输出。<br>从全局看，上游的每个实例都会往下游的每个实例发；下游的每个实例都会从上游的每个实例收<br>从局部看，单个实例会往下游的每个实例发；单个实例也会从上游的每个实例收</p>
+<li><p>调用ExecutionVertex.createDeploymentDescriptor，可以理解为ExecutionGraph的下一层。ExecutionGraph是全局性的；而这里是对单实例的局部描写，每个单实例需要做好自己的事情，管理好自己的输入和输出。<br><img src="DataSend.png" alt="DataSend"><br>上游的每个实例都会往下游的每个实例发，下游的每个实例都会从上游的每个实例收。但由于收发其实一一对应，且Flink采用的是拉模式，因此每个发送端实例需要准备好发往各下游实例的数据，然后接收端只需映射到各发送端并指定具体槽位即可。</p>
 <ul>
 <li>注意下游连接上游时，上游增加一个IRP，下游增加一个input</li>
 <li>每个IRP生成一个ResultPartitionDeploymentDescriptor</li>
-<li>对于每一个input生成一个InputGateDeploymentDescriptor，对于每一个上游里面的每个Partition生成一个InputChannelDeploymentDescriptor</li>
-<li>实际是拉模式，下游从上游拉取数据<br><img src="15620569452240.jpg" alt=""></li>
+<li>对于每一个input生成一个InputGateDeploymentDescriptor，对于每一个上游里面的每个Partition生成一个InputChannelDeploymentDescriptor<br><img src="15620569452240.jpg" alt=""></li>
 </ul>
 </li>
 <li><p>TaskExecutor.submitTask</p>
